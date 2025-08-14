@@ -119,49 +119,13 @@
       <p class="byline">by Coherence Rising</p>
       <p class="subtitle">A sacred space for prayer, focus, and renewal</p>
       <nav class="row" style="justify-content:center">
-        <a class="chip" href="#planner">Planner</a>
-        <a class="chip" href="#journal">Prayer Journal</a>
         <a class="chip" href="#breathwork">Breathwork</a>
         <a class="chip" href="#pomodoro">Pomodoro</a>
+        <a class="chip" href="#journal">Prayer Journal</a>
       </nav>
     </header>
 
-    <!-- Planner -->
-    <section id="planner" class="card" aria-labelledby="planner-title">
-      <div class="row" style="justify-content:space-between">
-        <h2 id="planner-title" style="margin:0;font-size:1.15rem">Daily Planner</h2>
-        <div class="actions">
-          <button class="btn ghost" id="prev" aria-label="Previous day">◀</button>
-          <input id="date" class="input" type="date" aria-label="Planner date" />
-          <button class="btn ghost" id="next" aria-label="Next day">▶</button>
-        </div>
-      </div>
-      <input id="goal" class="input" type="text" placeholder="Today's main goal…" />
-      <div class="row" style="margin-top:.5rem">
-        <input id="sgoal" class="input" type="text" placeholder="Optional spiritual goal (e.g., Pray for someone today)" />
-      </div>
-      <div class="row" style="margin-top:.75rem">
-        <input id="taskInput" class="input" type="text" placeholder="Add a task…" />
-        <button id="addTask" class="btn">Add</button>
-      </div>
-      <ul id="tasks" class="list" aria-live="polite"></ul>
-    </section>
-
-    <!-- Prayer Journal -->
-    <section id="journal" class="card" aria-labelledby="journal-title">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h2 id="journal-title" style="margin:0;font-size:1.15rem">Prayer Journal</h2>
-        <span id="verse" class="chip">Verse of the Day</span>
-      </div>
-      <textarea id="journalText" class="textarea" placeholder="Dear Lord…"></textarea>
-      <div class="actions">
-        <button id="saveJournal" class="btn">Save</button>
-        <button id="copyJournal" class="btn secondary">Copy text</button>
-        <label class="chip" style="cursor:pointer"><input type="checkbox" id="autoSave" /> Auto-save</label>
-      </div>
-    </section>
-
-    <!-- Breathwork -->
+    <!-- Breathwork (now first) -->
     <section id="breathwork" class="card" aria-labelledby="breathwork-title">
       <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
       <p style="margin:.25rem 0 .75rem">Guided breathing with gentle cues. Optional music and visuals.</p>
@@ -199,7 +163,7 @@
       </div>
     </section>
 
-    <!-- Pomodoro -->
+    <!-- Pomodoro (now second) -->
     <section id="pomodoro" class="card" aria-labelledby="pomodoro-title">
       <h2 id="pomodoro-title" style="margin:0 0 .5rem;font-size:1.15rem">Pomodoro Focus</h2>
       <p style="margin:.25rem 0 .75rem">25 minutes on, brief break off — meditate on Scripture while you work.</p>
@@ -230,6 +194,20 @@
         Pomodoro complete! Take a short break. 🌿
       </div>
     </section>
+
+    <!-- Prayer Journal (now third) -->
+    <section id="journal" class="card" aria-labelledby="journal-title">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h2 id="journal-title" style="margin:0;font-size:1.15rem">Prayer Journal</h2>
+        <span id="verse" class="chip">Verse of the Day</span>
+      </div>
+      <textarea id="journalText" class="textarea" placeholder="Dear Lord…"></textarea>
+      <div class="actions">
+        <button id="saveJournal" class="btn">Save</button>
+        <button id="copyJournal" class="btn secondary">Copy text</button>
+        <label class="chip" style="cursor:pointer"><input type="checkbox" id="autoSave" /> Auto-save</label>
+      </div>
+    </section>
   </div>
 
   <footer>
@@ -238,49 +216,45 @@
   </footer>
 
   <script>
+  document.addEventListener('DOMContentLoaded', function(){
+    // --- sanity badge so we know JS is running ---
     (function(){
-      const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-      const pad=n=>String(n).padStart(2,'0'); const today=()=>new Date().toISOString().slice(0,10); const NS=k=>`cr:${k}`;
-      const storage=(function(){ try{const k='__t__'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return localStorage;}catch(e){const m=new Map(); return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)}; }})();
-      // Footer year
-      $('#year').textContent = new Date().getFullYear();
+      const tag=document.createElement('div');
+      tag.textContent='JS connected ✅';
+      Object.assign(tag.style,{
+        position:'fixed',bottom:'12px',right:'12px',zIndex:9999,
+        background:'rgba(163,177,138,.95)',color:'#122311',
+        border:'1px solid rgba(0,0,0,.08)',padding:'6px 10px',
+        borderRadius:'999px',font:'600 12px/1.2 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
+        boxShadow:'0 2px 10px rgba(0,0,0,.12)'
+      });
+      document.body.appendChild(tag);
+      setTimeout(()=>tag.remove(), 1500);
+    })();
 
-      /* Planner */
-      const dateEl=$('#date'), goalEl=$('#goal'), sGoalEl=$('#sgoal'); const taskInput=$('#taskInput'), addTask=$('#addTask'), taskList=$('#tasks']);
-      function key(){ return NS('plan:'+(dateEl.value||today())); }
-      function read(){ try{return JSON.parse(storage.getItem(key())||'{}')}catch(e){return{}} }
-      function write(v){ try{storage.setItem(key(), JSON.stringify(v));}catch(e){} }
-      function renderTasks(arr){
-        taskList.innerHTML='';
-        (arr||[]).forEach((t,i)=>{
-          const li=document.createElement('li'); const cb=document.createElement('input'); const span=document.createElement('span'); const rm=document.createElement('button');
-          cb.type='checkbox'; cb.checked=!!t.done; span.textContent=t.text; if(t.done) span.className='done';
-          cb.onchange=()=>{ t.done=cb.checked; span.className=t.done?'done':''; saveFromUI(); };
-          rm.className='btn ghost'; rm.textContent='Remove';
-          rm.onclick=()=>{ arr.splice(i,1); write({daily:goalEl.value,sgoal:sGoalEl.value,tasks:arr}); renderTasks(arr); };
-          li.append(cb, span, rm); taskList.appendChild(li);
-        });
-      }
-      function render(){ const p=read(); goalEl.value=p.daily||''; sGoalEl.value=p.sgoal||''; renderTasks(p.tasks||[]); }
-      function saveFromUI(){
-        const tasks=[...taskList.querySelectorAll('li')].map(li=>({ text: li.querySelector('span').textContent, done: li.querySelector('input').checked }));
-        write({daily:goalEl.value,sgoal:sGoalEl.value,tasks});
-      }
-      function shift(d){
-        const x=new Date(dateEl.value||today()); x.setDate(x.getDate()+d); dateEl.value=x.toISOString().slice(0,10);
-        render(); loadJournal();
-      }
-      dateEl.value=today(); render();
-      $('#prev').onclick=()=>shift(-1); $('#next').onclick=()=>shift(1);
-      dateEl.onchange=()=>{render();loadJournal();};
-      [goalEl,sGoalEl].forEach(el=> el.oninput=saveFromUI);
-      addTask.onclick=()=>{ const txt=(taskInput.value||'').trim(); if(!txt) return; const p=read(); p.tasks=p.tasks||[]; p.tasks.push({text:txt,done:false}); write(p); taskInput.value=''; renderTasks(p.tasks); };
+    const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+    const pad=n=>String(n).padStart(2,'0');
+    const NS=k=>`cr:${k}`;
 
-      /* Journal */
-      const verseEl=$('#verse'), jEl=$('#journalText'), saveJ=$('#saveJournal'), copyJ=$('#copyJournal'), autoJ=$('#autoSave');
-      function jKey(){ return NS('journal:'+(dateEl.value||today())); }
-      function loadJournal(){ try{ jEl.value = storage.getItem(jKey()) || ''; }catch(e){ jEl.value = ''; } }
-      function saveJournal(){ try{ storage.setItem(jKey(), jEl.value); }catch(e){} }
+    // localStorage-safe shim
+    const storage=(function(){
+      try{ const k='__t__'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return localStorage; }
+      catch(e){ const m=new Map(); return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)}; }
+    })();
+
+    // Footer year
+    const yearEl = document.getElementById('year');
+    if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+    /* =======================
+       PRAYER JOURNAL
+    ======================= */
+    const verseEl=$('#verse'), jEl=$('#journalText'), saveJ=$('#saveJournal'), copyJ=$('#copyJournal'), autoJ=$('#autoSave');
+    function jKey(){ return NS('journal:'+ new Date().toISOString().slice(0,10)); }
+    function loadJournal(){ if(jEl) try{ jEl.value = storage.getItem(jKey()) || ''; }catch(e){ jEl.value = ''; } }
+    function saveJournal(){ if(jEl) try{ storage.setItem(jKey(), jEl.value); }catch(e){} }
+
+    if(verseEl){
       verseEl.textContent = [
         '“Be still, and know that I am God.” — Psalm 46:10',
         '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
@@ -291,75 +265,88 @@
         '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
         '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
       ][new Date().getDate()%8];
-      loadJournal();
-      saveJ.onclick=saveJournal; jEl.oninput=()=>{ if(autoJ.checked) saveJournal(); };
-      copyJ.onclick=async()=>{ const txt=jEl.value; try{ if(navigator.clipboard?.writeText){ await navigator.clipboard.writeText(txt); copyJ.textContent='Copied!'; setTimeout(()=>copyJ.textContent='Copy text',1200);} }catch(e){} };
+    }
+    loadJournal();
+    if(saveJ) saveJ.onclick=saveJournal;
+    if(jEl) jEl.oninput=()=>{ if(autoJ?.checked) saveJournal(); };
+    if(copyJ) copyJ.onclick=async()=>{ const txt=jEl?.value||''; try{ if(navigator.clipboard?.writeText){ await navigator.clipboard.writeText(txt); copyJ.textContent='Copied!'; setTimeout(()=>copyJ.textContent='Copy text',1200);} }catch(e){} };
 
-      /* Breathwork */
-      const bBtns=$$('.breathBtn'), bTime=$('#breathTime'), bCue=$('#breathCue'), orb=$('#orb'), viz=$('#breathViz'), vizToggle=$('#toggleViz');
-      const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
-      function setCue(ph){
-        if(ph==='inhale'){ bCue.textContent='Inhale — Be still'; orb.style.transform='translate(-50%,-50%) scale(1.25)'; }
-        else if(ph==='hold'){ bCue.textContent='Hold — and know'; }
-        else if(ph==='exhale'){ bCue.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
-        else { bCue.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
-      }
-      let bIv=null, bEnd=null;
-      function startB(min){
-        if(bIv) clearInterval(bIv);
-        const total=min*60*1000; bEnd=Date.now()+total; let ph='inhale', phEnd=Date.now()+4000;
-        setCue(ph);
-        bIv=setInterval(()=>{
-          const rem=bEnd-Date.now(); bTime.textContent=fmt(rem);
-          if(rem<=0){ clearInterval(bIv); bIv=null; setCue('ready'); bTime.textContent='00:00'; return; }
-          if(Date.now()>=phEnd){
-            if(ph==='inhale'){ ph='hold'; setCue('hold'); phEnd=Date.now()+2000; }
-            else if(ph==='hold'){ ph='exhale'; setCue('exhale'); phEnd=Date.now()+6000; }
-            else { ph='inhale'; setCue('inhale'); phEnd=Date.now()+4000; }
-          }
-        },200);
-      }
-      bBtns.forEach(b=> b.onclick=()=> startB(parseInt(b.getAttribute('data-mins'),10)));
-      vizToggle.onchange=()=>{ viz.style.display = vizToggle.checked ? 'block' : 'none'; };
+    /* =======================
+       BREATHWORK
+    ======================= */
+    const bBtns=$$('.breathBtn'), bTime=$('#breathTime'), bCue=$('#breathCue'), orb=$('#orb'), viz=$('#breathViz'), vizToggle=$('#toggleViz');
+    const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
+    function setCue(ph){
+      if(!bCue||!orb) return;
+      if(ph==='inhale'){ bCue.textContent='Inhale — Be still'; orb.style.transform='translate(-50%,-50%) scale(1.25)'; }
+      else if(ph==='hold'){ bCue.textContent='Hold — and know'; }
+      else if(ph==='exhale'){ bCue.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
+      else { bCue.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
+    }
+    let bIv=null, bEnd=null;
+    function startB(min){
+      if(!bTime) return;
+      if(bIv) clearInterval(bIv);
+      const total=min*60*1000; bEnd=Date.now()+total; let ph='inhale', phEnd=Date.now()+4000;
+      setCue(ph);
+      bIv=setInterval(()=>{
+        const rem=bEnd-Date.now(); bTime.textContent=fmt(rem);
+        if(rem<=0){ clearInterval(bIv); bIv=null; setCue('ready'); bTime.textContent='00:00'; return; }
+        if(Date.now()>=phEnd){
+          if(ph==='inhale'){ ph='hold'; setCue('hold'); phEnd=Date.now()+2000; }
+          else if(ph==='hold'){ ph='exhale'; setCue('exhale'); phEnd=Date.now()+6000; }
+          else { ph='inhale'; setCue('inhale'); phEnd=Date.now()+4000; }
+        }
+      },200);
+    }
+    bBtns.forEach(b=> b && (b.onclick=()=> startB(parseInt(b.getAttribute('data-mins'),10))));
+    if(vizToggle) vizToggle.onchange=()=>{ if(viz) viz.style.display = vizToggle.checked ? 'block' : 'none'; };
 
-      /* Pomodoro */
-      const pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), pVerse=$('#pomoVerse'), toast=$('#toast');
-      const P=25*60*1000; let tick=null, ends=null, rest=null; const up=ms=>{ pomo.textContent=fmt(ms); };
-      const randVerse=()=>[
-        '“Be still, and know that I am God.” — Psalm 46:10',
-        '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
-        '“Draw near to God, and He will draw near to you.” — James 4:8',
-        '“Cast all your anxiety on Him because He cares for you.” — 1 Peter 5:7',
-        '“Rejoice in hope, be patient in tribulation, be constant in prayer.” — Romans 12:12',
-        '“Your word is a lamp to my feet and a light to my path.” — Psalm 119:105',
-        '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
-        '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
-      ][Math.floor(Math.random()*8)];
-      function startP(){ const now=Date.now(); ends=now+(rest??P); rest=null; pVerse.textContent=randVerse();
-        if(tick) clearInterval(tick);
-        tick=setInterval(()=>{
-          const rem=Math.max(0, ends-Date.now()); up(rem);
-          if(rem<=0){ clearInterval(tick); tick=null; if(toast){ toast.style.display='block'; setTimeout(()=>toast.style.display='none', 4000);} }
-        },250);
-      }
-      function pauseP(){ if(!tick) return; rest=Math.max(0, ends-Date.now()); clearInterval(tick); tick=null; }
-      function resetP(){ if(tick) clearInterval(tick); tick=null; rest=null; up(P); }
-      start.onclick=startP; pause.onclick=pauseP; reset.onclick=resetP; up(P);
+    /* =======================
+       POMODORO
+    ======================= */
+    const pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), pVerse=$('#pomoVerse'), toast=$('#toast');
+    const P=25*60*1000; let tick=null, ends=null, rest=null; const up=ms=>{ if(pomo) pomo.textContent=fmt(ms); };
+    const randVerse=()=>[
+      '“Be still, and know that I am God.” — Psalm 46:10',
+      '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
+      '“Draw near to God, and He will draw near to you.” — James 4:8',
+      '“Cast all your anxiety on Him because He cares for you.” — 1 Peter 5:7',
+      '“Rejoice in hope, be patient in tribulation, be constant in prayer.” — Romans 12:12',
+      '“Your word is a lamp to my feet and a light to my path.” — Psalm 119:105',
+      '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
+      '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
+    ][Math.floor(Math.random()*8)];
+    function startP(){ const now=Date.now(); ends=now+(rest??P); rest=null; if(pVerse) pVerse.textContent=randVerse();
+      if(tick) clearInterval(tick);
+      tick=setInterval(()=>{
+        const rem=Math.max(0, ends-Date.now()); up(rem);
+        if(rem<=0){ clearInterval(tick); tick=null; if(toast){ toast.style.display='block'; setTimeout(()=>toast.style.display='none', 4000);} }
+      },250);
+    }
+    function pauseP(){ if(!tick) return; rest=Math.max(0, ends-Date.now()); clearInterval(tick); tick=null; }
+    function resetP(){ if(tick) clearInterval(tick); tick=null; rest=null; up(P); }
+    if(start) start.onclick=startP;
+    if(pause) pause.onclick=pauseP;
+    if(reset) reset.onclick=resetP;
+    up(P);
 
-      // Spotify graceful fallback
-      $$('.spotify').forEach(box=>{
-        const ifr=box.querySelector('iframe'); const fb=box.querySelector('[data-fallback]'); let loaded=false;
-        ifr.onload=()=>loaded=true;
-        setTimeout(()=>{ if(!loaded){ ifr.style.display='none'; if(fb) fb.style.display='inline-flex'; } }, 3000);
+    // Spotify fallback (keeps layout nice if embeds are blocked)
+    $$('.spotify').forEach(box=>{
+      const ifr=box.querySelector('iframe'); const fb=box.querySelector('[data-fallback]'); let loaded=false;
+      if(ifr) ifr.onload=()=>loaded=true;
+      setTimeout(()=>{ if(!loaded && ifr){ ifr.style.display='none'; if(fb) fb.style.display='inline-flex'; } }, 3000);
+    });
+
+    // Keyboard activation for accessibility
+    $$('button').forEach(btn=>{
+      btn.addEventListener('keydown', e=>{
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); }
       });
+    });
 
-      // Keyboard activation
-      $$('button').forEach(btn=>{
-        btn.addEventListener('keydown', e=>{
-          if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); }
-        });
-      });
-    })();
+    console.log('[Breath of Faith] JS initialized ✔');
+  });
   </script>
 </body>
 </html>
