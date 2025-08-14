@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Coherence Rising — Breath of Faith</title>
+  <title>Coherence Rising — Breath of Life</title>
 
   <!-- Font: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,17 +35,24 @@
     .card{ background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:1rem; margin:1rem 0; }
     #cr-app > .card:last-of-type{ margin-bottom:4px; }
 
-    /* Header (roomy + resilient) */
+    /* Header (roomy + refined) */
     .header{
       border-radius:24px; text-align:center; padding:28px 20px;
       background:linear-gradient(135deg,var(--sky),var(--lav)); color:#1f2937;
     }
     .header h1{
       margin:.35rem 0 0; font-weight:700;
-      font-size:clamp(28px, 6.5vw, 44px); line-height:1.15; letter-spacing:.2px;
+      font-size:clamp(30px, 7vw, 48px); line-height:1.12; letter-spacing:.2px;
     }
-    .header p{
-      margin:.45rem 0 0; font-size:clamp(16px, 3.1vw, 19px); line-height:1.5; opacity:.9;
+    .header .byline{
+      font-size:clamp(14px, 2.7vw, 16px);
+      font-weight:600; opacity:.8;
+      margin:.2rem 0 .6rem;
+    }
+    .header .subtitle{
+      margin:0; 
+      font-size:clamp(18px, 3.3vw, 22px);  /* a touch larger than before */
+      line-height:1.5; opacity:.9;
     }
 
     /* Link normalization (no browser-blue or underline) */
@@ -63,6 +70,7 @@
 
     .row{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap }
     .actions{ display:flex; gap:.5rem; flex-wrap:wrap }
+    .header nav { margin-top:1.4rem; } /* more air between subtitle and links */
 
     /* Inputs */
     .input,.textarea{ width:100%; border:1px solid rgba(125,140,140,.25); border-radius:12px; padding:.7rem .8rem; background:#fff }
@@ -105,11 +113,11 @@
   </style>
 </head>
 <body>
-  <div id="cr-app" role="application" aria-label="Coherence Rising: Breath of Faith App">
+  <div id="cr-app" role="application" aria-label="Coherence Rising: Breath of Life App">
     <header class="header card">
-      <div class="chip" aria-label="Brand">Coherence Rising</div>
-      <h1>Breath of Faith</h1>
-      <p>A sacred space for prayer, focus, and renewal</p>
+      <h1>Breath of Life</h1>
+      <p class="byline">by Coherence Rising</p>
+      <p class="subtitle">A sacred space for prayer, focus, and renewal</p>
       <nav class="row" style="justify-content:center">
         <a class="chip" href="#planner">Planner</a>
         <a class="chip" href="#journal">Prayer Journal</a>
