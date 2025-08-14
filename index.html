@@ -5,88 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coherence Rising — Breath of Faith</title>
 
-  <!-- Font: Inter -->
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* Base layout (single-scroll inside this page) */
-    html, body { margin:0; padding:0; overflow:auto; min-height:0; background:#FDF6EC; overscroll-behavior-y:contain; }
-    * { box-sizing: border-box; }
+    html, body { margin:0; padding:0; background:#FDF6EC; overflow:auto; }
+    *{ box-sizing:border-box }
 
     :root{
       --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
-      --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131; --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
+      --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131;
+      --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
     }
 
-    /* App wrapper + Typography */
     #cr-app{
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
-      color:var(--ink);
-      padding:1rem;
-      padding-bottom:8px;      /* tiny buffer to avoid any trailing gap */
-      max-width:960px;
-      margin:0 auto;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color:var(--ink); max-width:960px; margin:0 auto; padding:1rem 1rem 8px;
     }
 
-    /* Cards */
     .card{ background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:1rem; margin:1rem 0; }
-    #cr-app > .card:last-of-type{ margin-bottom:4px; }
+    #cr-app>.card:last-of-type{ margin-bottom:4px; }
 
-    /* Header (roomy + refined) */
     .header{
       border-radius:24px; text-align:center; padding:28px 20px;
       background:linear-gradient(135deg,var(--sky),var(--lav)); color:#1f2937;
     }
-    .header h1{
-      margin:.35rem 0 0; font-weight:700;
-      font-size:clamp(30px, 7vw, 48px); line-height:1.12; letter-spacing:.2px;
-    }
-    .header .byline{
-      font-size:clamp(14px, 2.7vw, 16px);
-      font-weight:600; opacity:.8;
-      margin:.2rem 0 .6rem;
-    }
-    .header .subtitle{
-      margin:0; 
-      font-size:clamp(18px, 3.3vw, 22px);
-      line-height:1.5; opacity:.9;
-    }
+    .header h1{ margin:.35rem 0 0; font-weight:700; font-size:clamp(30px,7vw,48px); line-height:1.12; letter-spacing:.2px; }
+    .header .byline{ font-size:clamp(14px,2.7vw,16px); font-weight:600; opacity:.8; margin:.2rem 0 .6rem; }
+    .header .subtitle{ margin:0; font-size:clamp(18px,3.3vw,22px); line-height:1.5; opacity:.9; }
 
-    /* Link normalization (no browser-blue or underline) */
-    #cr-app a, #cr-app a:visited, #cr-app a:active { color:inherit; text-decoration:none; }
+    #cr-app a{ color:inherit; text-decoration:none; }
 
-    /* “Chip” pill styling (for nav links) */
-    .chip, a.chip{
-      display:inline-block;
-      background:#fff; color:#1f2937;
-      border:1px solid rgba(125,140,140,.3);
-      border-radius:999px;
-      padding:.35rem .75rem;
-      font-size:.95rem;
+    .chip{
+      display:inline-block; background:#fff; color:#1f2937;
+      border:1px solid rgba(125,140,140,.3); border-radius:999px;
+      padding:.35rem .75rem; font-size:.95rem;
     }
+    .row{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+    .actions{ display:flex; gap:.5rem; flex-wrap:wrap; }
+    .header nav{ margin-top:1.4rem; }
 
-    .row{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap }
-    .actions{ display:flex; gap:.5rem; flex-wrap:wrap }
-    .header nav { margin-top:1.4rem; } /* more air between subtitle and links */
-
-    /* Inputs */
-    .input,.textarea{ width:100%; border:1px solid rgba(125,140,140,.25); border-radius:12px; padding:.7rem .8rem; background:#fff }
-    .textarea{ min-height:140px; resize:vertical }
     .btn{ border:0; border-radius:12px; padding:.6rem .9rem; background:var(--olive); color:#132b16; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(163,177,138,.35) }
-    .btn.secondary{ background:var(--taupe); color:#3b3b3b }
-    .btn.ghost{ background:transparent; border:1px solid rgba(125,140,140,.35); color:#334155 }
+    .btn.secondary{ background:var(--taupe); color:#3b3b3b; }
+    .btn.ghost{ background:transparent; border:1px solid rgba(125,140,140,.35); color:#334155; }
 
-    /* Lists */
-    .list{ list-style:none; padding:0; margin:.5rem 0 }
-    .list li{ display:flex; align-items:center; gap:.6rem; padding:.5rem; border-radius:10px; border:1px dashed rgba(125,140,140,.3); background:#fff }
-    .list li+li{ margin-top:.5rem }
-    .done{ text-decoration:line-through; color:#6b7280 }
+    .timer{ font-variant-numeric:tabular-nums; font-size:2rem; font-weight:700; }
 
-    /* Visuals */
-    .timer{ font-variant-numeric:tabular-nums; font-size:2rem; font-weight:700 }
     .breath{
       width:100%; aspect-ratio:1.6/1; border-radius:14px; position:relative; overflow:hidden;
       background:
@@ -103,11 +70,11 @@
     .hint{
       position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
       background:rgba(253,246,236,.85); border:1px solid rgba(125,140,140,.2);
-      padding:.25rem .6rem; border-radius:999px; font-size:.85rem
+      padding:.25rem .6rem; border-radius:999px; font-size:.9rem
     }
 
     footer{ text-align:center; color:#475569; padding:8px 12px; margin:0 }
-    footer a{ text-decoration:none; border-bottom:1px dashed rgba(125,140,140,.5) }
+    footer a{ border-bottom:1px dashed rgba(125,140,140,.5) }
 
     @media (min-width:860px){ .grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem } }
   </style>
@@ -121,23 +88,26 @@
       <nav class="row" style="justify-content:center">
         <a class="chip" href="#breathwork">Breathwork</a>
         <a class="chip" href="#pomodoro">Pomodoro</a>
-        <a class="chip" href="#journal">Prayer Journal</a>
       </nav>
     </header>
 
-    <!-- Breathwork (now first) -->
+    <!-- Breathwork -->
     <section id="breathwork" class="card" aria-labelledby="breathwork-title">
       <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
       <p style="margin:.25rem 0 .75rem">Guided breathing with gentle cues. Optional music and visuals.</p>
+
       <div class="row" style="justify-content:space-between;align-items:center">
         <div class="actions" role="group" aria-label="Breath durations">
-          <button class="btn breathBtn" data-mins="3">3 min</button>
-          <button class="btn breathBtn" data-mins="5">5 min</button>
-          <button class="btn breathBtn" data-mins="10">10 min</button>
-          <button class="btn breathBtn" data-mins="15">15 min</button>
-          <button class="btn breathBtn" data-mins="20">20 min</button>
+          <button class="btn" data-mins="3">3 min</button>
+          <button class="btn" data-mins="5">5 min</button>
+          <button class="btn" data-mins="10">10 min</button>
+          <button class="btn" data-mins="15">15 min</button>
+          <button class="btn" data-mins="20">20 min</button>
         </div>
-        <label class="chip"><input type="checkbox" id="toggleViz" checked /> Visuals</label>
+        <div class="actions">
+          <button id="breathPause" class="btn secondary" disabled>Pause</button>
+          <label class="chip"><input type="checkbox" id="toggleViz" checked /> Visuals</label>
+        </div>
       </div>
 
       <div class="grid" style="margin-top:.5rem">
@@ -150,20 +120,16 @@
           </div>
         </div>
         <div>
-          <div class="spotify">
-            <iframe style="border-radius:12px"
-              src="https://open.spotify.com/embed/album/59QgbMZznJd7gAQloXLlk0?utm_source=generator"
-              width="100%" height="300" frameborder="0"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              title="Calming Worship Instrumentals"></iframe>
-            <a href="https://open.spotify.com/album/59QgbMZznJd7gAQloXLlk0" target="_blank" rel="noopener"
-               class="chip" data-fallback style="display:none;margin-top:8px;justify-content:center">🎵 Listen on Spotify</a>
-          </div>
+          <iframe style="border-radius:12px"
+            src="https://open.spotify.com/embed/album/59QgbMZznJd7gAQloXLlk0?utm_source=generator"
+            width="100%" height="300" frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            title="Calming Worship Instrumentals"></iframe>
         </div>
       </div>
     </section>
 
-    <!-- Pomodoro (now second) -->
+    <!-- Pomodoro -->
     <section id="pomodoro" class="card" aria-labelledby="pomodoro-title">
       <h2 id="pomodoro-title" style="margin:0 0 .5rem;font-size:1.15rem">Pomodoro Focus</h2>
       <p style="margin:.25rem 0 .75rem">25 minutes on, brief break off — meditate on Scripture while you work.</p>
@@ -180,32 +146,14 @@
         "Commit your work to the LORD, and your plans will be established." — Proverbs 16:3
       </div>
 
-      <div class="spotify">
-        <iframe style="border-radius:12px"
-          src="https://open.spotify.com/embed/album/3lL4wCD0MDpEW2C3wf1DZH?utm_source=generator"
-          width="100%" height="300" frameborder="0"
-          allow="autoplay; encrypted-media; picture-in-picture"
-          title="Focus LoFi"></iframe>
-        <a href="https://open.spotify.com/album/3lL4wCD0MDpEW2C3wf1DZH" target="_blank" rel="noopener"
-           class="chip" data-fallback style="display:none;margin-top:8px;justify-content:center">🎵 Listen on Spotify</a>
-      </div>
+      <iframe style="border-radius:12px"
+        src="https://open.spotify.com/embed/album/3lL4wCD0MDpEW2C3wf1DZH?utm_source=generator"
+        width="100%" height="300" frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        title="Focus LoFi"></iframe>
 
       <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid rgba(125,140,140,.3);border-radius:10px;background:#fff">
         Pomodoro complete! Take a short break. 🌿
-      </div>
-    </section>
-
-    <!-- Prayer Journal (now third) -->
-    <section id="journal" class="card" aria-labelledby="journal-title">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h2 id="journal-title" style="margin:0;font-size:1.15rem">Prayer Journal</h2>
-        <span id="verse" class="chip">Verse of the Day</span>
-      </div>
-      <textarea id="journalText" class="textarea" placeholder="Dear Lord…"></textarea>
-      <div class="actions">
-        <button id="saveJournal" class="btn">Save</button>
-        <button id="copyJournal" class="btn secondary">Copy text</button>
-        <label class="chip" style="cursor:pointer"><input type="checkbox" id="autoSave" /> Auto-save</label>
       </div>
     </section>
   </div>
@@ -216,98 +164,119 @@
   </footer>
 
   <script>
+  // --- JS Connected badge (brief) ---
   document.addEventListener('DOMContentLoaded', function(){
-    // --- sanity badge so we know JS is running ---
-    (function(){
-      const tag=document.createElement('div');
-      tag.textContent='JS connected ✅';
-      Object.assign(tag.style,{
-        position:'fixed',bottom:'12px',right:'12px',zIndex:9999,
-        background:'rgba(163,177,138,.95)',color:'#122311',
-        border:'1px solid rgba(0,0,0,.08)',padding:'6px 10px',
-        borderRadius:'999px',font:'600 12px/1.2 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
-        boxShadow:'0 2px 10px rgba(0,0,0,.12)'
+    const tag=document.createElement('div');
+    tag.textContent='JS connected ✅';
+    Object.assign(tag.style,{position:'fixed',bottom:'12px',right:'12px',zIndex:9999,background:'rgba(163,177,138,.95)',color:'#122311',border:'1px solid rgba(0,0,0,.08)',padding:'6px 10px',borderRadius:'999px',font:'600 12px/1.2 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial',boxShadow:'0 2px 10px rgba(0,0,0,.12)'});
+    document.body.appendChild(tag); setTimeout(()=>tag.remove(), 1200);
+  });
+
+  // Footer year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Utilities
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const pad=n=>String(n).padStart(2,'0');
+  const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
+
+  /* =======================
+     BREATHWORK (with Pause/Resume)
+  ======================= */
+  (function(){
+    const timeEl=$('#breathTime'), cueEl=$('#breathCue'), orb=$('#orb'), viz=$('#breathViz');
+    const toggleViz=$('#toggleViz'), pauseBtn=$('#breathPause');
+    const durButtons=$$('#breathwork [data-mins]');
+
+    // Phases: inhale 4s, hold 2s, exhale 6s
+    const PHASES=[{name:'inhale',ms:4000},{name:'hold',ms:2000},{name:'exhale',ms:6000}];
+
+    let running=false, paused=false;
+    let totalEnd=null, // Date.now()+remaining
+        remaining=null, // ms remaining total
+        phaseIdx=0,
+        phaseEnd=null,  // Date.now()+phaseRemaining
+        phaseRemaining=null,
+        tickIv=null;
+
+    function setCue(name){
+      if(!cueEl||!orb) return;
+      if(name==='inhale'){ cueEl.textContent='Inhale — Be still'; orb.style.transform='translate(-50%,-50%) scale(1.25)'; }
+      else if(name==='hold'){ cueEl.textContent='Hold — and know'; }
+      else if(name==='exhale'){ cueEl.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
+      else { cueEl.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
+    }
+
+    function stopTick(){ if(tickIv){ clearInterval(tickIv); tickIv=null; } }
+    function updateTime(){
+      const now=Date.now();
+      const rem=Math.max(0, totalEnd-now);
+      if(timeEl) timeEl.textContent=fmt(rem);
+      if(rem<=0){
+        stopTick(); running=false; paused=false;
+        if(pauseBtn){ pauseBtn.disabled=true; pauseBtn.textContent='Pause'; }
+        setCue('ready'); if(timeEl) timeEl.textContent='00:00';
+      }
+      if(now>=phaseEnd){
+        // advance phase
+        phaseIdx=(phaseIdx+1)%PHASES.length;
+        const p=PHASES[phaseIdx];
+        phaseEnd=now+p.ms;
+        setCue(p.name);
+      }
+    }
+
+    function start(minutes){
+      const total = minutes*60*1000;
+      running=true; paused=false;
+      totalEnd = Date.now()+total;
+      phaseIdx=0; const p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
+      setCue(p.name);
+      if(pauseBtn){ pauseBtn.disabled=false; pauseBtn.textContent='Pause'; }
+      stopTick(); tickIv=setInterval(updateTime, 200);
+    }
+
+    function pause(){
+      if(!running || paused) return;
+      const now=Date.now();
+      remaining = Math.max(0, totalEnd-now);
+      phaseRemaining = Math.max(0, phaseEnd-now);
+      paused=true; stopTick();
+      if(pauseBtn) pauseBtn.textContent='Resume';
+    }
+
+    function resume(){
+      if(!running || !paused) return;
+      const now=Date.now();
+      totalEnd = now + remaining;
+      phaseEnd  = now + phaseRemaining;
+      paused=false;
+      if(pauseBtn) pauseBtn.textContent='Pause';
+      stopTick(); tickIv=setInterval(updateTime, 200);
+    }
+
+    // Wire UI
+    durButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const mins=parseInt(btn.getAttribute('data-mins'),10)||3;
+        start(mins);
       });
-      document.body.appendChild(tag);
-      setTimeout(()=>tag.remove(), 1500);
-    })();
-
-    const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-    const pad=n=>String(n).padStart(2,'0');
-    const NS=k=>`cr:${k}`;
-
-    // localStorage-safe shim
-    const storage=(function(){
-      try{ const k='__t__'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return localStorage; }
-      catch(e){ const m=new Map(); return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)}; }
-    })();
-
-    // Footer year
-    const yearEl = document.getElementById('year');
-    if(yearEl) yearEl.textContent = new Date().getFullYear();
-
-    /* =======================
-       PRAYER JOURNAL
-    ======================= */
-    const verseEl=$('#verse'), jEl=$('#journalText'), saveJ=$('#saveJournal'), copyJ=$('#copyJournal'), autoJ=$('#autoSave');
-    function jKey(){ return NS('journal:'+ new Date().toISOString().slice(0,10)); }
-    function loadJournal(){ if(jEl) try{ jEl.value = storage.getItem(jKey()) || ''; }catch(e){ jEl.value = ''; } }
-    function saveJournal(){ if(jEl) try{ storage.setItem(jKey(), jEl.value); }catch(e){} }
-
-    if(verseEl){
-      verseEl.textContent = [
-        '“Be still, and know that I am God.” — Psalm 46:10',
-        '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
-        '“Draw near to God, and He will draw near to you.” — James 4:8',
-        '“Cast all your anxiety on Him because He cares for you.” — 1 Peter 5:7',
-        '“Rejoice in hope, be patient in tribulation, be constant in prayer.” — Romans 12:12',
-        '“Your word is a lamp to my feet and a light to my path.” — Psalm 119:105',
-        '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
-        '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
-      ][new Date().getDate()%8];
+    });
+    if(pauseBtn){
+      pauseBtn.addEventListener('click', ()=>{
+        if(!running){ return; }
+        if(!paused) pause(); else resume();
+      });
     }
-    loadJournal();
-    if(saveJ) saveJ.onclick=saveJournal;
-    if(jEl) jEl.oninput=()=>{ if(autoJ?.checked) saveJournal(); };
-    if(copyJ) copyJ.onclick=async()=>{ const txt=jEl?.value||''; try{ if(navigator.clipboard?.writeText){ await navigator.clipboard.writeText(txt); copyJ.textContent='Copied!'; setTimeout(()=>copyJ.textContent='Copy text',1200);} }catch(e){} };
+    if(toggleViz){ toggleViz.addEventListener('change',()=>{ viz.style.display = toggleViz.checked ? 'block' : 'none'; }); }
+  })();
 
-    /* =======================
-       BREATHWORK
-    ======================= */
-    const bBtns=$$('.breathBtn'), bTime=$('#breathTime'), bCue=$('#breathCue'), orb=$('#orb'), viz=$('#breathViz'), vizToggle=$('#toggleViz');
-    const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
-    function setCue(ph){
-      if(!bCue||!orb) return;
-      if(ph==='inhale'){ bCue.textContent='Inhale — Be still'; orb.style.transform='translate(-50%,-50%) scale(1.25)'; }
-      else if(ph==='hold'){ bCue.textContent='Hold — and know'; }
-      else if(ph==='exhale'){ bCue.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
-      else { bCue.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
-    }
-    let bIv=null, bEnd=null;
-    function startB(min){
-      if(!bTime) return;
-      if(bIv) clearInterval(bIv);
-      const total=min*60*1000; bEnd=Date.now()+total; let ph='inhale', phEnd=Date.now()+4000;
-      setCue(ph);
-      bIv=setInterval(()=>{
-        const rem=bEnd-Date.now(); bTime.textContent=fmt(rem);
-        if(rem<=0){ clearInterval(bIv); bIv=null; setCue('ready'); bTime.textContent='00:00'; return; }
-        if(Date.now()>=phEnd){
-          if(ph==='inhale'){ ph='hold'; setCue('hold'); phEnd=Date.now()+2000; }
-          else if(ph==='hold'){ ph='exhale'; setCue('exhale'); phEnd=Date.now()+6000; }
-          else { ph='inhale'; setCue('inhale'); phEnd=Date.now()+4000; }
-        }
-      },200);
-    }
-    bBtns.forEach(b=> b && (b.onclick=()=> startB(parseInt(b.getAttribute('data-mins'),10))));
-    if(vizToggle) vizToggle.onchange=()=>{ if(viz) viz.style.display = vizToggle.checked ? 'block' : 'none'; };
-
-    /* =======================
-       POMODORO
-    ======================= */
-    const pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), pVerse=$('#pomoVerse'), toast=$('#toast');
-    const P=25*60*1000; let tick=null, ends=null, rest=null; const up=ms=>{ if(pomo) pomo.textContent=fmt(ms); };
-    const randVerse=()=>[
+  /* =======================
+     POMODORO
+  ======================= */
+  (function(){
+    const pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), verse=$('#pomoVerse'), toast=$('#toast');
+    const verses=[
       '“Be still, and know that I am God.” — Psalm 46:10',
       '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
       '“Draw near to God, and He will draw near to you.” — James 4:8',
@@ -316,47 +285,49 @@
       '“Your word is a lamp to my feet and a light to my path.” — Psalm 119:105',
       '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
       '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
-    ][Math.floor(Math.random()*8)];
-    function startP(){ const now=Date.now(); ends=now+(rest??P); rest=null; if(pVerse) pVerse.textContent=randVerse();
-      if(tick) clearInterval(tick);
-      tick=setInterval(()=>{
+    ];
+
+    const FULL = 25*60*1000;
+    let ends=null, rest=null, iv=null;
+
+    function up(ms){ if(pomo) pomo.textContent=fmt(ms); }
+    function startP(){
+      if(verse) verse.textContent = verses[Math.floor(Math.random()*verses.length)];
+      const now=Date.now(); ends=now + (rest ?? FULL); rest=null;
+      if(iv) clearInterval(iv);
+      iv=setInterval(()=>{
         const rem=Math.max(0, ends-Date.now()); up(rem);
-        if(rem<=0){ clearInterval(tick); tick=null; if(toast){ toast.style.display='block'; setTimeout(()=>toast.style.display='none', 4000);} }
+        if(rem<=0){ clearInterval(iv); iv=null; if(toast){ toast.style.display='block'; setTimeout(()=>toast.style.display='none', 4000);} }
       },250);
     }
-    function pauseP(){ if(!tick) return; rest=Math.max(0, ends-Date.now()); clearInterval(tick); tick=null; }
-    function resetP(){ if(tick) clearInterval(tick); tick=null; rest=null; up(P); }
-    if(start) start.onclick=startP;
-    if(pause) pause.onclick=pauseP;
-    if(reset) reset.onclick=resetP;
-    up(P);
+    function pauseP(){ if(!iv) return; rest=Math.max(0, ends-Date.now()); clearInterval(iv); iv=null; }
+    function resetP(){ if(iv) clearInterval(iv); iv=null; rest=null; up(FULL); }
 
-    // Spotify fallback (keeps layout nice if embeds are blocked)
-    $$('.spotify').forEach(box=>{
-      const ifr=box.querySelector('iframe'); const fb=box.querySelector('[data-fallback]'); let loaded=false;
-      if(ifr) ifr.onload=()=>loaded=true;
-      setTimeout(()=>{ if(!loaded && ifr){ ifr.style.display='none'; if(fb) fb.style.display='inline-flex'; } }, 3000);
-    });
+    if(start) start.addEventListener('click', startP);
+    if(pause) pause.addEventListener('click', pauseP);
+    if(reset) reset.addEventListener('click', resetP);
+    up(FULL);
+  })();
 
-    // Keyboard activation for accessibility
-    $$('button').forEach(btn=>{
-      btn.addEventListener('keydown', e=>{
-        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); }
-      });
-    });
-
-    console.log('[Breath of Faith] JS initialized ✔');
-  });
-
-function sendHeightToParent() {
-  window.parent.postMessage({
-    type: "setHeight",
-    height: document.documentElement.scrollHeight
-  }, "*");
-}
-window.addEventListener("load", sendHeightToParent);
-window.addEventListener("resize", sendHeightToParent);
-</script>
-
+  /* =======================
+     Auto-height for Ontraport embed
+  ======================= */
+  (function(){
+    function postHeight(){
+      try{
+        var h = Math.max(
+          document.documentElement.scrollHeight,
+          document.body ? document.body.scrollHeight : 0
+        );
+        window.parent.postMessage({ type:"CR_HEIGHT", h:h }, "*");
+      }catch(e){}
+    }
+    window.addEventListener("load", postHeight);
+    window.addEventListener("resize", postHeight);
+    if("ResizeObserver" in window){ new ResizeObserver(postHeight).observe(document.body); }
+    setTimeout(postHeight, 400);
+    setTimeout(postHeight, 1200);
+  })();
+  </script>
 </body>
 </html>
