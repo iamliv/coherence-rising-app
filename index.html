@@ -164,14 +164,6 @@
   </footer>
 
   <script>
-  // --- JS Connected badge (brief) ---
-  document.addEventListener('DOMContentLoaded', function(){
-    const tag=document.createElement('div');
-    tag.textContent='JS connected ✅';
-    Object.assign(tag.style,{position:'fixed',bottom:'12px',right:'12px',zIndex:9999,background:'rgba(163,177,138,.95)',color:'#122311',border:'1px solid rgba(0,0,0,.08)',padding:'6px 10px',borderRadius:'999px',font:'600 12px/1.2 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial',boxShadow:'0 2px 10px rgba(0,0,0,.12)'});
-    document.body.appendChild(tag); setTimeout(()=>tag.remove(), 1200);
-  });
-
   // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -192,12 +184,9 @@
     const PHASES=[{name:'inhale',ms:4000},{name:'hold',ms:2000},{name:'exhale',ms:6000}];
 
     let running=false, paused=false;
-    let totalEnd=null, // Date.now()+remaining
-        remaining=null, // ms remaining total
-        phaseIdx=0,
-        phaseEnd=null,  // Date.now()+phaseRemaining
-        phaseRemaining=null,
-        tickIv=null;
+    let totalEnd=null, remaining=null; // total time tracking
+    let phaseIdx=0, phaseEnd=null, phaseRemaining=null; // phase tracking
+    let tickIv=null;
 
     function setCue(name){
       if(!cueEl||!orb) return;
@@ -206,36 +195,34 @@
       else if(name==='exhale'){ cueEl.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
       else { cueEl.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
     }
-
     function stopTick(){ if(tickIv){ clearInterval(tickIv); tickIv=null; } }
-    function updateTime(){
+    function update(){
       const now=Date.now();
       const rem=Math.max(0, totalEnd-now);
       if(timeEl) timeEl.textContent=fmt(rem);
+
       if(rem<=0){
         stopTick(); running=false; paused=false;
         if(pauseBtn){ pauseBtn.disabled=true; pauseBtn.textContent='Pause'; }
         setCue('ready'); if(timeEl) timeEl.textContent='00:00';
+        return;
       }
       if(now>=phaseEnd){
-        // advance phase
         phaseIdx=(phaseIdx+1)%PHASES.length;
         const p=PHASES[phaseIdx];
         phaseEnd=now+p.ms;
         setCue(p.name);
       }
     }
-
-    function start(minutes){
-      const total = minutes*60*1000;
+    function start(mins){
+      const total = mins*60*1000;
       running=true; paused=false;
       totalEnd = Date.now()+total;
       phaseIdx=0; const p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
       setCue(p.name);
       if(pauseBtn){ pauseBtn.disabled=false; pauseBtn.textContent='Pause'; }
-      stopTick(); tickIv=setInterval(updateTime, 200);
+      stopTick(); tickIv=setInterval(update, 200);
     }
-
     function pause(){
       if(!running || paused) return;
       const now=Date.now();
@@ -244,7 +231,6 @@
       paused=true; stopTick();
       if(pauseBtn) pauseBtn.textContent='Resume';
     }
-
     function resume(){
       if(!running || !paused) return;
       const now=Date.now();
@@ -252,7 +238,7 @@
       phaseEnd  = now + phaseRemaining;
       paused=false;
       if(pauseBtn) pauseBtn.textContent='Pause';
-      stopTick(); tickIv=setInterval(updateTime, 200);
+      stopTick(); tickIv=setInterval(update, 200);
     }
 
     // Wire UI
@@ -310,23 +296,44 @@
   })();
 
   /* =======================
-     Auto-height for Ontraport embed
+     Robust auto-height for Ontraport embed
   ======================= */
-  (function(){
-    function postHeight(){
-      try{
-        var h = Math.max(
-          document.documentElement.scrollHeight,
-          document.body ? document.body.scrollHeight : 0
-        );
-        window.parent.postMessage({ type:"CR_HEIGHT", h:h }, "*");
-      }catch(e){}
+  (function () {
+    function pageHeight() {
+      var app = document.getElementById('cr-app');
+      var foot = document.querySelector('footer');
+
+      function bottom(el){
+        if(!el) return 0;
+        var r = el.getBoundingClientRect();
+        return Math.ceil(r.top + window.scrollY + r.height);
+      }
+
+      var h = Math.max(
+        bottom(foot),
+        bottom(app),
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0
+      );
+
+      return Math.max(0, h - 1); // nudge -1px to avoid accidental overflow
     }
+
+    function postHeight() {
+      try {
+        window.parent.postMessage({ type: "CR_HEIGHT", h: pageHeight() }, "*");
+      } catch (e) {}
+    }
+
     window.addEventListener("load", postHeight);
     window.addEventListener("resize", postHeight);
-    if("ResizeObserver" in window){ new ResizeObserver(postHeight).observe(document.body); }
-    setTimeout(postHeight, 400);
-    setTimeout(postHeight, 1200);
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(postHeight).observe(document.body);
+    }
+    setTimeout(postHeight, 200);
+    setTimeout(postHeight, 600);
+    setTimeout(postHeight, 1500);
+    setTimeout(postHeight, 3000);
   })();
   </script>
 </body>
