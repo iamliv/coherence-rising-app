@@ -2,40 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coherence Rising — Breath of Faith</title>
   <style>
-    /* Prevent inner scrollbars so the parent can own scrolling */
-    html, body { margin:0; padding:0; overflow:hidden; background:#FDF6EC; }
-    * { box-sizing:border-box }
+    /* Single-scroll inside the iframe (most reliable in Ontraport) */
+    html, body { margin:0; padding:0; overflow:auto; min-height:100vh; background:#FDF6EC; }
+    * { box-sizing: border-box; }
 
-    :root{ --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7; --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131; --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08); }
+    :root{
+      --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
+      --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131; --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
+    }
 
-    #cr-app{ font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink); padding:1rem; padding-bottom:0; max-width:960px; margin:0 auto; }
-    .card{ background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:1rem; margin:1rem 0 }
+    /* Layout & Cards */
+    #cr-app{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink);
+      padding:1rem; padding-bottom:0; max-width:960px; margin:0 auto; }
+    .card{ background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:1rem; margin:1rem 0; }
 
+    /* Header */
     .header{ border-radius:24px; text-align:center; padding:20px; background:linear-gradient(135deg,var(--sky),var(--lav)); color:#1f2937 }
     .chip{ display:inline-block; border:1px solid rgba(125,140,140,.3); border-radius:999px; padding:.25rem .6rem; background:#fff; font-size:.85rem }
     .row{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap }
     .actions{ display:flex; gap:.5rem; flex-wrap:wrap }
+
+    /* Inputs */
     .input,.textarea{ width:100%; border:1px solid rgba(125,140,140,.25); border-radius:12px; padding:.7rem .8rem; background:#fff }
     .textarea{ min-height:140px; resize:vertical }
     .btn{ border:0; border-radius:12px; padding:.6rem .9rem; background:var(--olive); color:#132b16; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(163,177,138,.35) }
     .btn.secondary{ background:var(--taupe); color:#3b3b3b }
     .btn.ghost{ background:transparent; border:1px solid rgba(125,140,140,.35); color:#334155 }
 
+    /* Lists */
     .list{ list-style:none; padding:0; margin:.5rem 0 }
     .list li{ display:flex; align-items:center; gap:.6rem; padding:.5rem; border-radius:10px; border:1px dashed rgba(125,140,140,.3); background:#fff }
     .list li+li{ margin-top:.5rem }
     .done{ text-decoration:line-through; color:#6b7280 }
 
+    /* Visuals */
     .timer{ font-variant-numeric:tabular-nums; font-size:2rem; font-weight:700 }
     .breath{ width:100%; aspect-ratio:1.6/1; border-radius:14px; position:relative; overflow:hidden;
       background:radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
                  radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
                  radial-gradient(120% 100% at 0% 100%, var(--olive), transparent 55%); }
-    .orb{ position:absolute; left:50%; top:50%; width:120px; height:120px; background:rgba(255,255,255,.75); border:2px solid rgba(125,140,140,.25); border-radius:50%; transform:translate(-50%,-50%) scale(1); transition:transform 3.4s ease-in-out; box-shadow:inset 0 0 40px rgba(167,199,231,.6), 0 10px 30px rgba(0,0,0,.12) }
-    .hint{ position:absolute; left:50%; bottom:12px; transform:translateX(-50%); background:rgba(253,246,236,.85); border:1px solid rgba(125,140,140,.2); padding:.25rem .6rem; border-radius:999px; font-size:.85rem }
+    .orb{ position:absolute; left:50%; top:50%; width:120px; height:120px; background:rgba(255,255,255,.75); border:2px solid rgba(125,140,140,.25);
+      border-radius:50%; transform:translate(-50%,-50%) scale(1); transition:transform 3.4s ease-in-out;
+      box-shadow:inset 0 0 40px rgba(167,199,231,.6), 0 10px 30px rgba(0,0,0,.12) }
+    .hint{ position:absolute; left:50%; bottom:12px; transform:translateX(-50%); background:rgba(253,246,236,.85); border:1px solid rgba(125,140,140,.2);
+      padding:.25rem .6rem; border-radius:999px; font-size:.85rem }
 
     footer{ text-align:center; color:#475569; padding:12px }
     footer a{ text-decoration:none; border-bottom:1px dashed rgba(125,140,140,.5) }
@@ -62,9 +75,9 @@
       <div class="row" style="justify-content:space-between">
         <h2 id="planner-title" style="margin:0;font-size:1.15rem">Daily Planner</h2>
         <div class="actions">
-          <button class="btn ghost" id="prev">◀</button>
+          <button class="btn ghost" id="prev" aria-label="Previous day">◀</button>
           <input id="date" class="input" type="date" aria-label="Planner date" />
-          <button class="btn ghost" id="next">▶</button>
+          <button class="btn ghost" id="next" aria-label="Next day">▶</button>
         </div>
       </div>
       <input id="goal" class="input" type="text" placeholder="Today's main goal…" />
@@ -227,38 +240,6 @@
       $$('button').forEach(btn=>{ btn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); btn.click(); } }); });
     })();
   </script>
-
-  <!-- Robust auto-resize: continuous + mutation-aware + throttled -->
-  <script>
-    (function(){
-      var lastH = 0, ticking = false;
-      function calcHeight(){
-        var d=document, e=d.documentElement, b=d.body;
-        return Math.max(b.scrollHeight,e.scrollHeight,b.offsetHeight,e.offsetHeight,e.clientHeight);
-      }
-      function postHeight(force){
-        var h = calcHeight();
-        if (force || Math.abs(h-lastH)>4){
-          lastH=h;
-          try{ parent.postMessage({type:'CR_FRAME_HEIGHT',height:h},'*'); }catch(_){ }
-        }
-      }
-      function onChange(){
-        if(!ticking){ ticking=true; requestAnimationFrame(function(){ ticking=false; postHeight(false); }); }
-      }
-      window.addEventListener('load', function(){
-        document.documentElement.style.overflow='hidden';
-        document.body.style.overflow='hidden';
-        postHeight(true);
-        try{ parent.postMessage({type:'CR_FRAME_READY'},'*'); }catch(_){ }
-      });
-      window.addEventListener('resize', onChange, {passive:true});
-      window.addEventListener('scroll', onChange, {passive:true});
-      document.addEventListener('visibilitychange', onChange);
-      var mo=new MutationObserver(onChange);
-      mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,characterData:true});
-      setInterval(onChange, 800);
-    })();
-  </script>
 </body>
 </html>
+
