@@ -43,7 +43,7 @@
   /* Breathwork visual container */
   .viz-wrap{
     position:relative;width:100%;
-    height:min(72vh, 90vw);
+    height:min(72vh, 95vw); /* tall on phones, avoid wider-than-screen */
     border-radius:14px;overflow:hidden;
     background:radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
                radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
@@ -58,23 +58,26 @@
     transition:transform 3.6s ease-in-out;
   }
 
-  /* Orb (div) */
-  .orb{width:min(55vmin, 80vw);height:min(55vmin, 80vw);background:var(--orb);
+  /* Orb (transparent; no background box) */
+  .orb{width:min(68vmin, 92vw);height:min(68vmin, 92vw);background:var(--orb);
        border:2px solid #0003;border-radius:50%;
-       box-shadow:inset 0 0 80px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
-  /* SVG/canvas box */
-  .svg-box{width:min(60vmin, 88vw);height:min(60vmin, 88vw)}
+       box-shadow:inset 0 0 100px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
+
+  /* SVG/canvas boxes (transparent) */
+  .svg-box{width:min(74vmin, 96vw);height:min(74vmin, 96vw)}
   .svg-fit{width:100%;height:100%}
 
-  .leaf-vein line,.leaf-vein path{stroke:var(--viz-line);stroke-opacity:.9}
-  .leaf-vein .mid{stroke-width:3}
-  .leaf-vein .vein{stroke-width:1.2}
+  /* Protestant cross (SVG stroked path, no background) */
+  .cross-shape{fill:none;stroke:var(--viz-line);stroke-width:40;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 6px 16px rgba(0,0,0,.25))}
+  .cross-glow{stroke:rgba(255,255,255,.08);stroke-width:80}
 
-  .branches line{stroke:var(--viz-line);stroke-width:1.4;stroke-linecap:round}
-  .fade{opacity:.8}
+  /* Branches (transparent) */
+  .branches line{stroke:var(--viz-line);stroke-width:1.6;stroke-linecap:round}
 
+  /* Starfield */
   #starCanvas{display:block;width:100%;height:100%}
 
+  /* Centered cue for ALL visuals */
   .cue-center{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     text-align:center;font-weight:700;letter-spacing:.2px;color:var(--cue);
@@ -104,7 +107,7 @@
   <!-- Breathwork -->
   <section id="breathwork" class="card" aria-labelledby="breathwork-title">
     <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
-    <p style="margin:.25rem 0 .75rem">Choose a visual, go fullscreen if you like, and follow the centered cue.</p>
+    <p style="margin:.25rem 0 .75rem">Pick a visual and a breathing pattern. Go fullscreen if you like. Follow the centered cue.</p>
 
     <div class="row" style="justify-content:space-between;align-items:center">
       <div class="actions" role="group" aria-label="Breath durations">
@@ -116,13 +119,21 @@
         <button id="breathPause" class="btn secondary" disabled>Pause</button>
       </div>
       <div class="row">
-        <select id="vizSelect" class="select" aria-label="Visual">
+        <select id="patternSelect" class="select" aria-label="Breathing pattern">
+          <option value="box-3">Box: 3-3-3-3</option>
+          <option value="box-4">Box: 4-4-4-4</option>
+          <option value="box-6">Box: 6-6-6-6</option>
+          <option value="even-4">Even: 4-4</option>
+          <option value="even-6">Even: 6-6</option>
+          <option value="even-8">Even: 8-8</option>
+        </select>
+        <select id="vizSelect" class="select" aria-label="Visual" style="margin-left:.5rem">
           <option value="orb">Orb</option>
-          <option value="leaf">Fractal Leaf</option>
-          <option value="branches">Fractal Branches</option>
+          <option value="cross">Cross</option>
+          <option value="branches">Branches</option>
           <option value="star">Starfield</option>
         </select>
-        <button id="fsToggle" class="btn ghost" aria-label="Toggle Fullscreen">Fullscreen</button>
+        <button id="fsToggle" class="btn ghost" aria-label="Toggle Fullscreen" style="margin-left:.5rem">Fullscreen</button>
       </div>
     </div>
 
@@ -136,19 +147,15 @@
             <!-- Orb -->
             <div id="orbBox" class="orb" aria-hidden="false"></div>
 
-            <!-- Leaf -->
-            <div id="leafBox" class="svg-box" aria-hidden="true" style="display:none">
-              <svg id="leafSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Fractal leaf">
-                <defs>
-                  <radialGradient id="lg" cx="50%" cy="30%" r="70%">
-                    <stop offset="0%" stop-color="#0f1a16"/>
-                    <stop offset="100%" stop-color="#0a110e"/>
-                  </radialGradient>
-                </defs>
-                <rect x="0" y="0" width="1000" height="1000" fill="url(#lg)"/>
-                <g class="leaf-vein" fill="none">
-                  <path class="mid" d="M120,880 C300,760 520,600 880,200"/>
-                  <g id="leafVeins"></g>
+            <!-- Cross (Protestant: long vertical, shorter horizontal; transparent) -->
+            <div id="crossBox" class="svg-box" aria-hidden="true" style="display:none">
+              <svg id="crossSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Protestant Christian cross">
+                <!-- Transparent background; only strokes render -->
+                <g>
+                  <!-- soft glow under-stroke -->
+                  <path class="cross-glow" d="M500 140 L500 860 M250 430 L750 430"/>
+                  <!-- main cross -->
+                  <path class="cross-shape" d="M500 160 L500 840 M280 430 L720 430"/>
                 </g>
               </svg>
             </div>
@@ -156,7 +163,7 @@
             <!-- Branches -->
             <div id="branchBox" class="svg-box" aria-hidden="true" style="display:none">
               <svg id="branchSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Fractal branches">
-                <rect x="0" y="0" width="1000" height="1000" fill="#0a100e"/>
+                <!-- transparent background -->
                 <g id="branchGroup" class="branches"></g>
               </svg>
             </div>
@@ -238,57 +245,47 @@
   var fmt=function(ms){var s=Math.max(0,Math.floor(ms/1000));return pad(Math.floor(s/60))+':'+pad(s%60)};
 
   /* =======================
-     BREATHWORK
+     BREATHWORK (visuals + patterns)
   ======================= */
   (function(){
     var timeEl=$('#breathTime'), cueEl=$('#cue');
-    var vizWrap=$('#vizWrap'), vizScale=$('#vizScale'), vizSelect=$('#vizSelect');
+    var vizWrap=$('#vizWrap'), vizScale=$('#vizScale');
+    var vizSelect=$('#vizSelect'), patternSelect=$('#patternSelect');
     var pauseBtn=$('#breathPause'); var durButtons=$$('#breathwork [data-mins]');
-    var orbBox=$('#orbBox'), leafBox=$('#leafBox'), branchBox=$('#branchBox'), starBox=$('#starBox');
-    var leafVeins=$('#leafVeins'), branchGroup=$('#branchGroup');
+
+    var orbBox=$('#orbBox'), crossBox=$('#crossBox'), branchBox=$('#branchBox'), starBox=$('#starBox');
+    var branchGroup=$('#branchGroup');
     var starCanvas=$('#starCanvas'), starCtx = starCanvas && starCanvas.getContext ? starCanvas.getContext('2d') : null;
 
-    // Phases and scales
-    var PHASES=[{name:'inhale',ms:4000,scale:1.8},{name:'hold',ms:2000,scale:null},{name:'exhale',ms:6000,scale:0.9}];
+    // PATTERNS
+    var PATTERNS={
+      'box-3':  [{name:'inhale',ms:3000,scale:1.85},{name:'hold',ms:3000,scale:null},{name:'exhale',ms:3000,scale:0.9},{name:'hold',ms:3000,scale:null}],
+      'box-4':  [{name:'inhale',ms:4000,scale:1.85},{name:'hold',ms:4000,scale:null},{name:'exhale',ms:4000,scale:0.9},{name:'hold',ms:4000,scale:null}],
+      'box-6':  [{name:'inhale',ms:6000,scale:1.85},{name:'hold',ms:6000,scale:null},{name:'exhale',ms:6000,scale:0.9},{name:'hold',ms:6000,scale:null}],
+      'even-4': [{name:'inhale',ms:4000,scale:1.85},{name:'exhale',ms:4000,scale:0.9}],
+      'even-6': [{name:'inhale',ms:6000,scale:1.85},{name:'exhale',ms:6000,scale:0.9}],
+      'even-8': [{name:'inhale',ms:8000,scale:1.85},{name:'exhale',ms:8000,scale:0.9}],
+    };
     var REST_SCALE = 1.05;
+    var phases = PATTERNS['box-4']; // default
 
     var running=false, paused=false;
     var totalEnd=null, remaining=null;
     var phaseIdx=0, phaseEnd=null, phaseRemaining=null;
     var tickIv=null;
 
+    // Visual switcher (all transparent; only shapes drawn)
     function show(mode){
-      orbBox.style.display   = (mode==='orb') ? 'block' : 'none';
-      leafBox.style.display  = (mode==='leaf') ? 'block' : 'none';
-      branchBox.style.display= (mode==='branches') ? 'block' : 'none';
-      starBox.style.display  = (mode==='star') ? 'block' : 'none';
+      orbBox.style.display    = (mode==='orb') ? 'block' : 'none';
+      crossBox.style.display  = (mode==='cross') ? 'block' : 'none';
+      branchBox.style.display = (mode==='branches') ? 'block' : 'none';
+      starBox.style.display   = (mode==='star') ? 'block' : 'none';
       if(mode==='star') startStars(); else stopStars();
     }
     vizSelect.addEventListener('change',function(){ show(vizSelect.value); });
     show('orb');
 
-    // Leaf veins
-    function drawLeaf(){
-      leafVeins.innerHTML='';
-      var base = [{x:150,y:820},{x:300,y:720},{x:480,y:600},{x:650,y:470},{x:800,y:350},{x:900,y:280}];
-      base.forEach(function(p,i){
-        var angle = -Math.PI/8 - i*0.04;
-        var len = 120 + i*30;
-        for(var k=0;k<5;k++){
-          var t = len*(1 - k*0.18);
-          var dx = Math.cos(angle - k*0.08)*t;
-          var dy = Math.sin(angle - k*0.08)*t;
-          var l = document.createElementNS('http://www.w3.org/2000/svg','line');
-          l.setAttribute('x1', p.x); l.setAttribute('y1', p.y);
-          l.setAttribute('x2', p.x+dx); l.setAttribute('y2', p.y+dy);
-          l.setAttribute('class','vein'); l.setAttribute('opacity', String(0.9 - k*0.16));
-          leafVeins.appendChild(l);
-        }
-      });
-    }
-    drawLeaf();
-
-    // Branches
+    // Branches (generated once; transparent background)
     function drawBranches(){
       branchGroup.innerHTML='';
       var W=1000,H=1000;
@@ -298,20 +295,20 @@
         var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
         ln.setAttribute('x1',x1); ln.setAttribute('y1',y1);
         ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
-        ln.setAttribute('opacity', String(0.25+0.75*(depth/8)));
+        ln.setAttribute('opacity', String(0.25+0.75*(depth/9)));
         branchGroup.appendChild(ln);
         var nlen=len*(0.68+Math.random()*0.08);
         seg(x2,y2,nlen,ang-0.6+Math.random()*0.15,depth-1);
         seg(x2,y2,nlen,ang+0.55-Math.random()*0.15,depth-1);
       }
-      seg(W*0.5,H*0.98,170,-Math.PI/2,9);
-      seg(W*0.2,H*0.95,120,-Math.PI/2.2,8);
-      seg(W*0.8,H*0.96,130,-Math.PI/1.8,8);
+      seg(W*0.5,H*0.98,190,-Math.PI/2,10);
+      seg(W*0.2,H*0.95,135,-Math.PI/2.2,9);
+      seg(W*0.8,H*0.96,140,-Math.PI/1.8,9);
     }
     drawBranches();
 
-    // Starfield
-    var stars=[], animId=null, lastT=0;
+    // Starfield (gentle drift; speed subtly tied to scale for "breathing" feel)
+    var stars=[], animId=null, lastT=0, starDrift=0.03;
     function initStars(){
       if(!starCanvas || !starCtx) return;
       var count = 180;
@@ -321,8 +318,9 @@
         stars[i] = {
           x: Math.random()*W, y: Math.random()*H,
           r: 0.7 + Math.random()*1.8,
-          a: 0.3 + Math.random()*0.7,
-          tw: 0.001 + Math.random()*0.002
+          a: Math.random()*Math.PI*2,
+          tw: 0.001 + Math.random()*0.002,
+          z: 0.5 + Math.random()*1.5 // depth-ish factor
         };
       }
     }
@@ -330,16 +328,20 @@
       if(!starCanvas || !starCtx) return;
       var W = starCanvas.width, H = starCanvas.height;
       starCtx.clearRect(0,0,W,H);
-      var g = starCtx.createRadialGradient(W*0.5,H*0.4,0,W*0.5,H*0.6,W*0.7);
-      g.addColorStop(0,'#0b0f0e'); g.addColorStop(1,'#060909');
-      starCtx.fillStyle=g; starCtx.fillRect(0,0,W,H);
+      // transparent canvas; draw only stars (no boxy background)
       for(var i=0;i<stars.length;i++){
         var s=stars[i];
         s.a += s.tw * dt;
+        // drift slightly downward; stronger when "inhale" (scale larger)
+        s.y += starDrift * s.z * dt * 0.02;
+        if(s.y > H+5) s.y = -5;
+
         var glow = 0.6 + 0.4*Math.sin(s.a);
-        starCtx.globalAlpha = 0.35 + 0.65*glow;
-        starCtx.beginPath(); starCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        starCtx.fillStyle = '#c9d6ff'; starCtx.fill();
+        starCtx.globalAlpha = 0.25 + 0.75*glow;
+        starCtx.beginPath();
+        starCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        starCtx.fillStyle = '#c9d6ff';
+        starCtx.fill();
       }
       starCtx.globalAlpha = 1;
     }
@@ -352,7 +354,7 @@
     function startStars(){ if(animId) return; initStars(); lastT=0; animId=window.requestAnimationFrame(tickStars); }
     function stopStars(){ if(animId) window.cancelAnimationFrame(animId); animId=null; }
 
-    // Cue + scaling
+    // Cue + scale
     function setCue(name){
       if(!cueEl) return;
       if(name==='inhale') cueEl.textContent='Inhale — Be still';
@@ -363,12 +365,16 @@
     function setScaleForPhase(phase){
       vizScale.style.transitionDuration = (phase.ms/1000)+'s';
       if(phase.scale!=null){
-        vizScale.style.transform = 'translate(-50%,-50%) scale('+phase.scale+')';
+        var s = phase.scale;
+        vizScale.style.transform = 'translate(-50%,-50%) scale('+s+')';
+        // tie star drift subtly to scale (bigger -> slightly faster)
+        starDrift = (s-0.9) * 0.06 + 0.02; // gentle range ~0.02–0.08
       }
     }
     function resetScale(){
       vizScale.style.transitionDuration = '0.4s';
       vizScale.style.transform = 'translate(-50%,-50%) scale('+REST_SCALE+')';
+      starDrift = 0.03;
     }
     resetScale();
 
@@ -387,8 +393,8 @@
         return;
       }
       if(now>=phaseEnd){
-        phaseIdx=(phaseIdx+1)%PHASES.length;
-        var p=PHASES[phaseIdx];
+        phaseIdx=(phaseIdx+1)%phases.length;
+        var p=phases[phaseIdx];
         phaseEnd=now+p.ms;
         setCue(p.name);
         setScaleForPhase(p);
@@ -398,12 +404,12 @@
       var total = mins*60*1000;
       running=true; paused=false;
       totalEnd = Date.now()+total;
-      phaseIdx=0; var p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
+      phaseIdx=0; var p=phases[phaseIdx]; phaseEnd=Date.now()+p.ms;
       setCue(p.name);
       setScaleForPhase(p);
       if(pauseBtn){ pauseBtn.disabled=false; pauseBtn.textContent='Pause'; }
       stopTick(); tickIv=setInterval(update, 200);
-      update(); // immediate tick so UI updates right away
+      update(); // show immediately
     }
     function pause(){
       if(!running || paused) return;
@@ -424,19 +430,26 @@
       update();
     }
 
-    // Fullscreen (no optional chaining; includes WebKit fallbacks)
+    // Pattern selection
+    patternSelect.addEventListener('change', function(){
+      phases = PATTERNS[patternSelect.value] || PATTERNS['box-4'];
+      // If mid-session, restart from the new pattern timing (polite behavior)
+      if(running){ pause(); resume(); }
+    });
+
+    // Fullscreen (with WebKit/MS fallbacks)
     var fsBtn=$('#fsToggle');
     function enterFS(el){
       try{
         if(el.requestFullscreen) el.requestFullscreen();
-        else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen(); // Safari
+        else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
         else if(el.msRequestFullscreen) el.msRequestFullscreen();
       }catch(e){}
     }
     function exitFS(){
       try{
         if(document.exitFullscreen) document.exitFullscreen();
-        else if(document.webkitExitFullscreen) document.webkitExitFullscreen(); // Safari
+        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
         else if(document.msExitFullscreen) document.msExitFullscreen();
       }catch(e){}
     }
@@ -498,7 +511,7 @@
   })();
 
   /* =======================
-     Auto-height message for iframes (harmless if standalone)
+     Auto-height message (harmless if standalone)
   ======================= */
   (function () {
     function elementBottom(el){ if(!el) return 0; var r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
