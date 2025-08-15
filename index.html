@@ -1,171 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Coherence Rising — Breath of Faith</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Coherence Rising — Breath of Faith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
+    --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131;
+    --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
+    --bg: var(--ivory);
+    --card: #fff;
+    --ink-weak:#475569;
+    --orb:#ffffffbf;
+    --cue:#1f2937;
+    --accent: var(--olive);
+    --viz-line:#24423a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0e1012; --card:#13161a; --ink:#e6e9ee; --ink-weak:#aab2bf; --orb:#ffffff1a; --cue:#e6e9ee; --accent:#7aa57a; --viz-line:#7aa57a; }
+  }
+  body[data-theme="night"]{
+    --bg:#0b0e11; --card:#101317; --ink:#e5ecf3; --ink-weak:#a6b0bf;
+    --orb:#ffffff22; --cue:#f2f5f9; --accent:#7aa57a; --viz-line:#6fa46f;
+  }
 
-  <!-- Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);overflow:auto}
+  *{box-sizing:border-box}
+  #cr-app{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;max-width:960px;margin:0 auto;padding:1rem 1rem 8px}
+  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:1rem;margin:1rem 0}
+  .header{border-radius:24px;text-align:center;padding:28px 20px;background:linear-gradient(135deg,var(--sky),var(--lav));color:#102232}
+  .header h1{margin:.35rem 0 0;font-weight:700;font-size:clamp(30px,7vw,48px);line-height:1.12}
+  .header .byline{font-size:clamp(14px,2.7vw,16px);font-weight:600;opacity:.85;margin:.2rem 0 .6rem}
+  .header .subtitle{margin:0;font-size:clamp(18px,3.3vw,22px);line-height:1.5;opacity:.9}
+  .row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .actions{display:flex;gap:.5rem;flex-wrap:wrap}
+  nav a{display:inline-block;background:#ffffffd9;color:#1f2937;border:1px solid #0000001f;border-radius:999px;padding:.35rem .75rem;text-decoration:none}
+  .btn{border:0;border-radius:12px;padding:.6rem .9rem;background:var(--accent);color:#132b16;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(163,177,138,.35)}
+  .btn.secondary{background:var(--taupe);color:#2b2b2b}
+  .btn.ghost{background:transparent;border:1px solid #00000033;color:var(--ink)}
+  .select, .toggle{border:1px solid #00000033;background:var(--card);color:var(--ink);border-radius:10px;padding:.5rem .6rem}
 
-  <style>
-    html, body { margin:0; padding:0; background:#FDF6EC; overflow:auto; }
-    *{ box-sizing:border-box }
+  .timer{font-variant-numeric:tabular-nums;font-size:2rem;font-weight:700}
 
-    :root{
-      --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
-      --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131;
-      --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
-    }
+  /* Breathwork visual container */
+  .viz-wrap{position:relative;width:100%;aspect-ratio:1.6/1;border-radius:14px;overflow:hidden;background:
+    radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
+    radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
+    radial-gradient(120% 100% at 0% 100%, var(--olive), transparent 55%)
+  }
+  body[data-theme="night"] .viz-wrap{background:linear-gradient(180deg,#0d1412,#0b0f0d)}
+  /* Orb mode */
+  .orb{position:absolute;left:50%;top:50%;width:120px;height:120px;background:var(--orb);border:2px solid #00000033;border-radius:50%;
+        transform:translate(-50%,-50%) scale(1);transition:transform 3.4s ease-in-out;box-shadow:inset 0 0 40px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
+  .cue-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;font-weight:700;letter-spacing:.2px;
+    color:var(--cue);font-size:clamp(18px,4vw,24px);padding:.25rem .5rem;border-radius:8px;background:transparent}
+  .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#00000020;color:#fff;padding:.25rem .6rem;border-radius:999px;font-size:.85rem}
 
-    #cr-app{
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      color:var(--ink); max-width:960px; margin:0 auto; padding:1rem 1rem 8px;
-    }
+  /* SVG visuals */
+  .svg-fit{position:absolute;inset:0;width:100%;height:100%}
+  .leaf-vein line,.leaf-vein path{stroke:var(--viz-line);stroke-opacity:.9}
+  .leaf-vein .mid{stroke-width:3}
+  .leaf-vein .vein{stroke-width:1.2}
+  .branches line{stroke:var(--viz-line);stroke-width:1.4;stroke-linecap:round}
+  .fade{opacity:.75}
 
-    .card{ background:#fff; border-radius:var(--r); box-shadow:var(--shadow); padding:1rem; margin:1rem 0; }
-    #cr-app>.card:last-of-type{ margin-bottom:4px; }
-
-    .header{
-      border-radius:24px; text-align:center; padding:28px 20px;
-      background:linear-gradient(135deg,var(--sky),var(--lav)); color:#1f2937;
-    }
-    .header h1{ margin:.35rem 0 0; font-weight:700; font-size:clamp(30px,7vw,48px); line-height:1.12; letter-spacing:.2px; }
-    .header .byline{ font-size:clamp(14px,2.7vw,16px); font-weight:600; opacity:.8; margin:.2rem 0 .6rem; }
-    .header .subtitle{ margin:0; font-size:clamp(18px,3.3vw,22px); line-height:1.5; opacity:.9; }
-
-    #cr-app a{ color:inherit; text-decoration:none; }
-
-    .chip{
-      display:inline-block; background:#fff; color:#1f2937;
-      border:1px solid rgba(125,140,140,.3); border-radius:999px;
-      padding:.35rem .75rem; font-size:.95rem;
-    }
-    .row{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
-    .actions{ display:flex; gap:.5rem; flex-wrap:wrap; }
-    .header nav{ margin-top:1.4rem; }
-
-    .btn{ border:0; border-radius:12px; padding:.6rem .9rem; background:var(--olive); color:#132b16; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(163,177,138,.35) }
-    .btn.secondary{ background:var(--taupe); color:#3b3b3b; }
-    .btn.ghost{ background:transparent; border:1px solid rgba(125,140,140,.35); color:#334155; }
-
-    .timer{ font-variant-numeric:tabular-nums; font-size:2rem; font-weight:700; }
-
-    .breath{
-      width:100%; aspect-ratio:1.6/1; border-radius:14px; position:relative; overflow:hidden;
-      background:
-        radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
-        radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
-        radial-gradient(120% 100% at 0% 100%, var(--olive), transparent 55%);
-    }
-    .orb{
-      position:absolute; left:50%; top:50%; width:120px; height:120px; background:rgba(255,255,255,.75);
-      border:2px solid rgba(125,140,140,.25); border-radius:50%;
-      transform:translate(-50%,-50%) scale(1); transition:transform 3.4s ease-in-out;
-      box-shadow:inset 0 0 40px rgba(167,199,231,.6), 0 10px 30px rgba(0,0,0,.12)
-    }
-    .hint{
-      position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
-      background:rgba(253,246,236,.85); border:1px solid rgba(125,140,140,.2);
-      padding:.25rem .6rem; border-radius:999px; font-size:.9rem
-    }
-
-    footer{ text-align:center; color:#475569; padding:8px 12px; margin:0 }
-    footer a{ border-bottom:1px dashed rgba(125,140,140,.5) }
-
-    @media (min-width:860px){ .grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem } }
-  </style>
+  footer{text-align:center;color:var(--ink-weak);padding:10px 12px}
+  @media (min-width:860px){ .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem} }
+</style>
 </head>
 <body>
-  <div id="cr-app" role="application" aria-label="Coherence Rising: Breath of Faith App">
-    <header class="header card">
-      <h1>Breath of Faith</h1>
-      <p class="byline">by Coherence Rising</p>
-      <p class="subtitle">A sacred space for prayer, focus, and renewal</p>
-      <nav class="row" style="justify-content:center">
-        <a class="chip" href="#breathwork">Breathwork</a>
-        <a class="chip" href="#pomodoro">Pomodoro</a>
-      </nav>
-    </header>
+<div id="cr-app" role="application" aria-label="Coherence Rising: Breath of Faith App">
+  <header class="header card">
+    <h1>Breath of Faith</h1>
+    <p class="byline">by Coherence Rising</p>
+    <p class="subtitle">A sacred space for prayer, focus, and renewal</p>
+    <nav class="row" style="justify-content:center">
+      <a href="#breathwork">Breathwork</a>
+      <a href="#pomodoro">Pomodoro</a>
+      <button id="nightToggle" class="btn ghost" style="margin-left:.5rem">Night mode</button>
+    </nav>
+  </header>
 
-    <!-- Breathwork -->
-    <section id="breathwork" class="card" aria-labelledby="breathwork-title">
-      <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
-      <p style="margin:.25rem 0 .75rem">Guided breathing with gentle cues. Optional music and visuals.</p>
+  <!-- Breathwork -->
+  <section id="breathwork" class="card" aria-labelledby="breathwork-title">
+    <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
+    <p style="margin:.25rem 0 .75rem">Guided breathing with gentle cues. Choose your visual and optionally go fullscreen.</p>
 
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div class="actions" role="group" aria-label="Breath durations">
-          <button class="btn" data-mins="3">3 min</button>
-          <button class="btn" data-mins="5">5 min</button>
-          <button class="btn" data-mins="10">10 min</button>
-          <button class="btn" data-mins="15">15 min</button>
-          <button class="btn" data-mins="20">20 min</button>
-        </div>
-        <div class="actions">
-          <button id="breathPause" class="btn secondary" disabled>Pause</button>
-          <label class="chip"><input type="checkbox" id="toggleViz" checked /> Visuals</label>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <div class="actions" role="group" aria-label="Breath durations">
+        <button class="btn" data-mins="3">3 min</button>
+        <button class="btn" data-mins="5">5 min</button>
+        <button class="btn" data-mins="10">10 min</button>
+        <button class="btn" data-mins="15">15 min</button>
+        <button class="btn" data-mins="20">20 min</button>
+        <button id="breathPause" class="btn secondary" disabled>Pause</button>
+      </div>
+      <div class="row">
+        <select id="vizSelect" class="select" aria-label="Visual">
+          <option value="orb">Orb</option>
+          <option value="leaf">Fractal Leaf</option>
+          <option value="branches">Fractal Branches</option>
+        </select>
+        <button id="fsToggle" class="btn ghost" aria-label="Toggle Fullscreen">Fullscreen</button>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:.75rem">
+      <div>
+        <div class="timer" id="breathTime">00:00</div>
+        <div id="vizWrap" class="viz-wrap" tabindex="0" aria-live="polite">
+          <!-- Orb mode -->
+          <div id="orb" class="orb"></div>
+          <div id="cue" class="cue-center">Ready to begin</div>
+          <div class="hint fade">Press a duration to start</div>
+
+          <!-- Leaf SVG -->
+          <svg id="leafSVG" class="svg-fit" viewBox="0 0 1000 600" aria-hidden="true" style="display:none">
+            <defs>
+              <linearGradient id="leafGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#1b2c27"/>
+                <stop offset="100%" stop-color="#0d1412"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="1000" height="600" fill="url(#leafGrad)"/>
+            <g class="leaf-vein" fill="none">
+              <path class="mid" d="M150,500 C300,420 500,320 850,120" />
+              <!-- veins will be added by JS -->
+              <g id="leafVeins"></g>
+            </g>
+          </svg>
+
+          <!-- Branches SVG -->
+          <svg id="branchSVG" class="svg-fit" viewBox="0 0 1000 600" aria-hidden="true" style="display:none">
+            <rect x="0" y="0" width="1000" height="600" fill="#0c1210"/>
+            <g id="branchGroup" class="branches" />
+          </svg>
         </div>
       </div>
 
-      <div class="grid" style="margin-top:.5rem">
-        <div>
-          <div class="timer" id="breathTime">00:00</div>
-          <p id="breathCue" style="font-weight:600">Ready to begin</p>
-          <div class="breath" id="breathViz" aria-hidden="true">
-            <div class="orb" id="orb"></div>
-            <div class="hint">Follow the orb</div>
-          </div>
-        </div>
-        <div>
-          <iframe style="border-radius:12px"
-            src="https://open.spotify.com/embed/album/59QgbMZznJd7gAQloXLlk0?utm_source=generator"
-            width="100%" height="300" frameborder="0"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            title="Calming Worship Instrumentals"></iframe>
-        </div>
+      <div>
+        <iframe style="border-radius:12px"
+          src="https://open.spotify.com/embed/album/59QgbMZznJd7gAQloXLlk0?utm_source=generator"
+          width="100%" height="300" frameborder="0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          title="Calming Worship Instrumentals"></iframe>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Pomodoro -->
-    <section id="pomodoro" class="card" aria-labelledby="pomodoro-title">
-      <h2 id="pomodoro-title" style="margin:0 0 .5rem;font-size:1.15rem">Pomodoro Focus</h2>
-      <p style="margin:.25rem 0 .75rem">25 minutes on, brief break off — meditate on Scripture while you work.</p>
+  <!-- Pomodoro -->
+  <section id="pomodoro" class="card" aria-labelledby="pomodoro-title">
+    <h2 id="pomodoro-title" style="margin:0 0 .5rem;font-size:1.15rem">Pomodoro Focus</h2>
+    <p style="margin:.25rem 0 .75rem">25 minutes on, brief break off — meditate on Scripture while you work.</p>
 
-      <div class="row" style="align-items:center;justify-content:space-between">
-        <div class="timer" id="pomo">25:00</div>
-        <div class="actions">
-          <button id="pomoStart" class="btn">Start</button>
-          <button id="pomoPause" class="btn secondary">Pause</button>
-          <button id="pomoReset" class="btn ghost">Reset</button>
-        </div>
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <div class="timer" id="pomo">25:00</div>
+      <div class="actions">
+        <button id="pomoStart" class="btn">Start</button>
+        <button id="pomoPause" class="btn secondary">Pause</button>
+        <button id="pomoReset" class="btn ghost">Reset</button>
       </div>
-      <div id="pomoVerse" class="chip" style="margin:.75rem 0">
-        "Commit your work to the LORD, and your plans will be established." — Proverbs 16:3
-      </div>
+    </div>
+    <div id="pomoVerse" class="row" style="gap:.4rem;margin:.75rem 0;color:var(--ink-weak)">
+      “Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3
+    </div>
 
-      <iframe style="border-radius:12px"
-        src="https://open.spotify.com/embed/album/3lL4wCD0MDpEW2C3wf1DZH?utm_source=generator"
-        width="100%" height="300" frameborder="0"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        title="Focus LoFi"></iframe>
+    <iframe style="border-radius:12px"
+      src="https://open.spotify.com/embed/album/3lL4wCD0MDpEW2C3wf1DZH?utm_source=generator"
+      width="100%" height="300" frameborder="0"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      title="Focus LoFi"></iframe>
 
-      <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid rgba(125,140,140,.3);border-radius:10px;background:#fff">
-        Pomodoro complete! Take a short break. 🌿
-      </div>
-    </section>
-  </div>
+    <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid #00000033;border-radius:10px;background:var(--card)">
+      Pomodoro complete! Take a short break. 🌿
+    </div>
+  </section>
+</div>
 
-  <footer>
-    <p><strong>Coherence Rising</strong> · Music & Meditations: <a href="#breathwork">Breathwork</a> · <a href="#pomodoro">Focus</a></p>
-    <p style="font-size:.9rem">© <span id="year"></span> Coherence Rising — Prayer & Productivity Companion</p>
-  </footer>
+<footer>
+  <p><strong>Coherence Rising</strong> · Music & Meditations</p>
+  <p style="font-size:.9rem">© <span id="year"></span> Coherence Rising — Prayer & Productivity Companion</p>
+</footer>
 
-  <script>
-  // Footer year
+<script>
+  // Year
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Night mode
+  const nightBtn = document.getElementById('nightToggle');
+  if (nightBtn) {
+    nightBtn.addEventListener('click', () => {
+      const isNight = document.body.getAttribute('data-theme') === 'night';
+      if (isNight) { document.body.removeAttribute('data-theme'); nightBtn.textContent = 'Night mode'; }
+      else { document.body.setAttribute('data-theme','night'); nightBtn.textContent = 'Day mode'; }
+    });
+  }
 
   // Utilities
   const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
@@ -173,19 +206,20 @@
   const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
 
   /* =======================
-     BREATHWORK (with Pause/Resume)
+     BREATHWORK (pause/resume, cue-in-orb, visuals, fullscreen)
   ======================= */
   (function(){
-    const timeEl=$('#breathTime'), cueEl=$('#breathCue'), orb=$('#orb'), viz=$('#breathViz');
-    const toggleViz=$('#toggleViz'), pauseBtn=$('#breathPause');
-    const durButtons=$$('#breathwork [data-mins]');
+    const timeEl=$('#breathTime'), cueEl=$('#cue'), orb=$('#orb');
+    const vizWrap=$('#vizWrap'), vizSelect=$('#vizSelect'), fsBtn=$('#fsToggle');
+    const pauseBtn=$('#breathPause'); const durButtons=$$('#breathwork [data-mins]');
+    const leafSVG=$('#leafSVG'), leafVeins=$('#leafVeins'), branchSVG=$('#branchSVG'), branchGroup=$('#branchGroup');
 
     // Phases: inhale 4s, hold 2s, exhale 6s
     const PHASES=[{name:'inhale',ms:4000},{name:'hold',ms:2000},{name:'exhale',ms:6000}];
 
     let running=false, paused=false;
-    let totalEnd=null, remaining=null; // total time tracking
-    let phaseIdx=0, phaseEnd=null, phaseRemaining=null; // phase tracking
+    let totalEnd=null, remaining=null;
+    let phaseIdx=0, phaseEnd=null, phaseRemaining=null;
     let tickIv=null;
 
     function setCue(name){
@@ -241,20 +275,77 @@
       stopTick(); tickIv=setInterval(update, 200);
     }
 
-    // Wire UI
+    // Visual switching
+    function show(mode){
+      // hide all
+      orb.style.display = (mode==='orb') ? 'block' : 'none';
+      leafSVG.style.display = (mode==='leaf') ? 'block' : 'none';
+      branchSVG.style.display = (mode==='branches') ? 'block' : 'none';
+    }
+    vizSelect.addEventListener('change',()=>show(vizSelect.value));
+    show('orb');
+
+    // Generate Leaf veins (simple fractal-ish fans)
+    function drawLeaf(){
+      leafVeins.innerHTML='';
+      const base = [{x:160,y:495}, {x:300,y:430}, {x:450,y:360}, {x:620,y:280}, {x:780,y:200}, {x:900,y:150}];
+      base.forEach((p,i)=>{
+        const angle = -Math.PI/8 - i*0.04;
+        const len = 70 + i*20;
+        for(let k=0;k<4;k++){
+          const t = len*(1 - k*0.18);
+          const dx = Math.cos(angle - k*0.08)*t;
+          const dy = Math.sin(angle - k*0.08)*t;
+          const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+          l.setAttribute('x1', p.x); l.setAttribute('y1', p.y);
+          l.setAttribute('x2', p.x+dx); l.setAttribute('y2', p.y+dy);
+          l.setAttribute('class','vein'); l.setAttribute('opacity', String(0.9 - k*0.18));
+          leafVeins.appendChild(l);
+        }
+      });
+    }
+    drawLeaf();
+
+    // Generate Branch fractal
+    function drawBranches(){
+      branchGroup.innerHTML='';
+      const W=1000,H=600;
+      function seg(x1,y1,len,ang,depth){
+        if(depth<=0||len<6) return;
+        const x2=x1+Math.cos(ang)*len, y2=y1+Math.sin(ang)*len;
+        const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+        ln.setAttribute('x1',x1); ln.setAttribute('y1',y1);
+        ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
+        ln.setAttribute('opacity', String(0.2+0.8*(depth/8)));
+        branchGroup.appendChild(ln);
+        const nlen=len*(0.68+Math.random()*0.08);
+        seg(x2,y2,nlen,ang-0.6+Math.random()*0.15,depth-1);
+        seg(x2,y2,nlen,ang+0.55-Math.random()*0.15,depth-1);
+      }
+      seg(W*0.5,H*0.95,120,-Math.PI/2,8);
+      seg(W*0.2,H*0.9,90,-Math.PI/2.2,7);
+      seg(W*0.8,H*0.92,95,-Math.PI/1.8,7);
+    }
+    drawBranches();
+
+    // Fullscreen
+    function toggleFS(){
+      const el = vizWrap;
+      if (!document.fullscreenElement) el.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+    fsBtn.addEventListener('click', toggleFS);
+
+    // Wire durations + pause
     durButtons.forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const mins=parseInt(btn.getAttribute('data-mins'),10)||3;
         start(mins);
       });
     });
-    if(pauseBtn){
-      pauseBtn.addEventListener('click', ()=>{
-        if(!running){ return; }
-        if(!paused) pause(); else resume();
-      });
-    }
-    if(toggleViz){ toggleViz.addEventListener('change',()=>{ viz.style.display = toggleViz.checked ? 'block' : 'none'; }); }
+    pauseBtn.addEventListener('click', ()=>{ if(!running) return; paused?resume():pause(); });
+
+    // When entering Night Mode, keep visuals subtle (no change needed—CSS variables handle it)
   })();
 
   /* =======================
@@ -272,10 +363,10 @@
       '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
       '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
     ];
-
     const FULL = 25*60*1000;
     let ends=null, rest=null, iv=null;
 
+    const fmt=(ms)=>{ const s=Math.max(0,Math.floor(ms/1000)); const mm=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return mm+':'+ss; };
     function up(ms){ if(pomo) pomo.textContent=fmt(ms); }
     function startP(){
       if(verse) verse.textContent = verses[Math.floor(Math.random()*verses.length)];
@@ -296,65 +387,23 @@
   })();
 
   /* =======================
-     Robust auto-height for Ontraport embed
+     (Optional) Auto-height postMessage for embeds
   ======================= */
-/* Ultra-robust auto-height: precise measurement + late updates */
-(function () {
-  function elementBottom(el){
-    if(!el) return 0;
-    var r = el.getBoundingClientRect();
-    return Math.ceil((window.scrollY || window.pageYOffset || 0) + r.bottom);
-  }
-
-  function pageHeight() {
-    var app = document.getElementById('cr-app');
-    var foot = document.querySelector('footer');
-    var b = document.body, d = document.documentElement;
-
-    // Consider every reasonable metric; take the maximum.
-    var h = Math.max(
-      elementBottom(foot),
-      elementBottom(app),
-      b ? b.scrollHeight : 0,
-      d ? d.scrollHeight : 0,
-      b ? b.offsetHeight : 0,
-      d ? d.offsetHeight : 0,
-      b ? b.clientHeight : 0,
-      d ? d.clientHeight : 0
-    );
-
-    // Return an integer; subtract a hair to avoid accidental parent overflow.
-    return Math.max(0, Math.floor(h - 2));
-  }
-
-  function postHeight() {
-    try {
-      window.parent.postMessage({ type: "CR_HEIGHT", h: pageHeight() }, "*");
-    } catch (e) {}
-  }
-
-  // Initial + resize + observer + retries while things settle
-  window.addEventListener("load", postHeight);
-  window.addEventListener("resize", postHeight);
-  if ("ResizeObserver" in window) new ResizeObserver(postHeight).observe(document.body);
-
-  // Fonts (Google Fonts can shift layout)
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(postHeight);
-  }
-
-  // Any iframes inside (Spotify) can shift layout as they render
-  Array.prototype.forEach.call(document.querySelectorAll("iframe"), function (ifr) {
-    ifr.addEventListener("load", function(){ setTimeout(postHeight, 50); setTimeout(postHeight, 400); });
-  });
-
-  // Extra retries for slow layout
-  setTimeout(postHeight, 150);
-  setTimeout(postHeight, 600);
-  setTimeout(postHeight, 1500);
-  setTimeout(postHeight, 3000);
-})();
-
-  </script>
+  (function () {
+    function elementBottom(el){ if(!el) return 0; const r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
+    function pageHeight() {
+      const app = document.getElementById('cr-app'); const foot = document.querySelector('footer');
+      const b=document.body, d=document.documentElement;
+      const h=Math.max(elementBottom(foot),elementBottom(app),b?b.scrollHeight:0,d?d.scrollHeight:0,b?b.offsetHeight:0,d?d.offsetHeight:0);
+      return Math.max(0, Math.floor(h-2));
+    }
+    function postHeight(){ try{ window.parent.postMessage({type:"CR_HEIGHT",h:pageHeight()},"*"); }catch(e){} }
+    window.addEventListener("load", postHeight);
+    window.addEventListener("resize", postHeight);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(postHeight);
+    Array.prototype.forEach.call(document.querySelectorAll("iframe"), i=>i.addEventListener("load", ()=>{ setTimeout(postHeight,50); setTimeout(postHeight,400); }));
+    setTimeout(postHeight,150); setTimeout(postHeight,600); setTimeout(postHeight,1500); setTimeout(postHeight,3000);
+  })();
+</script>
 </body>
 </html>
