@@ -40,10 +40,10 @@
   .select{border:1px solid #0003;background:var(--card);color:var(--ink);border-radius:10px;padding:.5rem .6rem}
   .timer{font-variant-numeric:tabular-nums;font-size:2rem;font-weight:700}
 
-  /* Breathwork visual container — tall by default so visuals can grow big */
+  /* Breathwork visual container */
   .viz-wrap{
     position:relative;width:100%;
-    height:min(72vh, 90vw); /* tall on phones, not wider than viewport */
+    height:min(72vh, 90vw);
     border-radius:14px;overflow:hidden;
     background:radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
                radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
@@ -51,42 +51,36 @@
   }
   body[data-theme="night"] .viz-wrap{background:linear-gradient(180deg,#0c1210,#0a0f0d)}
 
-  /* One unified scale group that we animate for ALL visuals */
+  /* Unified scale group for ALL visuals */
   .viz-scale{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(1);
-    transform-origin:center center; will-change:transform;
-    transition:transform 3.6s ease-in-out; /* duration updated live per phase */
+    transform-origin:center center;will-change:transform;
+    transition:transform 3.6s ease-in-out;
   }
 
   /* Orb (div) */
   .orb{width:min(55vmin, 80vw);height:min(55vmin, 80vw);background:var(--orb);
        border:2px solid #0003;border-radius:50%;
        box-shadow:inset 0 0 80px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
-  /* SVGs fill an inner square so scaling is similar to orb */
+  /* SVG/canvas box */
   .svg-box{width:min(60vmin, 88vw);height:min(60vmin, 88vw)}
   .svg-fit{width:100%;height:100%}
 
-  /* Leaf */
   .leaf-vein line,.leaf-vein path{stroke:var(--viz-line);stroke-opacity:.9}
   .leaf-vein .mid{stroke-width:3}
   .leaf-vein .vein{stroke-width:1.2}
 
-  /* Branches */
   .branches line{stroke:var(--viz-line);stroke-width:1.4;stroke-linecap:round}
   .fade{opacity:.8}
 
-  /* Starfield canvas fills its box */
   #starCanvas{display:block;width:100%;height:100%}
 
-  /* Cue centered for ALL visuals */
   .cue-center{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     text-align:center;font-weight:700;letter-spacing:.2px;color:var(--cue);
     font-size:clamp(20px,5vw,28px);padding:.25rem .5rem;border-radius:8px;background:transparent;
-    text-shadow:0 1px 2px rgba(0,0,0,.25);
-    pointer-events:none;
+    text-shadow:0 1px 2px rgba(0,0,0,.25);pointer-events:none;
   }
-
   .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#0002;color:#fff;
         padding:.25rem .6rem;border-radius:999px;font-size:.85rem}
 
@@ -110,7 +104,7 @@
   <!-- Breathwork -->
   <section id="breathwork" class="card" aria-labelledby="breathwork-title">
     <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
-    <p style="margin:.25rem 0 .75rem">Choose a visual, go fullscreen if you like, and follow the cue in the center.</p>
+    <p style="margin:.25rem 0 .75rem">Choose a visual, go fullscreen if you like, and follow the centered cue.</p>
 
     <div class="row" style="justify-content:space-between;align-items:center">
       <div class="actions" role="group" aria-label="Breath durations">
@@ -136,7 +130,6 @@
       <div>
         <div class="timer" id="breathTime">00:00</div>
 
-        <!-- Visuals container -->
         <div id="vizWrap" class="viz-wrap" tabindex="0" aria-live="polite">
           <!-- Unified scale group -->
           <div id="vizScale" class="viz-scale">
@@ -229,66 +222,63 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 
   // Night mode
-  const nightBtn = document.getElementById('nightToggle');
-  if (nightBtn) {
-    nightBtn.addEventListener('click', () => {
-      const isNight = document.body.getAttribute('data-theme') === 'night';
+  (function(){
+    var nightBtn = document.getElementById('nightToggle');
+    if (!nightBtn) return;
+    nightBtn.addEventListener('click', function(){
+      var isNight = document.body.getAttribute('data-theme') === 'night';
       if (isNight) { document.body.removeAttribute('data-theme'); nightBtn.textContent = 'Night mode'; }
       else { document.body.setAttribute('data-theme','night'); nightBtn.textContent = 'Day mode'; }
     });
-  }
+  })();
 
   // Utilities
-  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
-  const pad=n=>String(n).padStart(2,'0');
-  const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
+  var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var pad=function(n){return String(n).padStart(2,'0')};
+  var fmt=function(ms){var s=Math.max(0,Math.floor(ms/1000));return pad(Math.floor(s/60))+':'+pad(s%60)};
 
   /* =======================
-     BREATHWORK (phases, scaling all visuals, fullscreen, starfield)
+     BREATHWORK
   ======================= */
   (function(){
-    const timeEl=$('#breathTime'), cueEl=$('#cue');
-    const vizWrap=$('#vizWrap'), vizScale=$('#vizScale'), vizSelect=$('#vizSelect');
-    const pauseBtn=$('#breathPause'); const durButtons=$$('#breathwork [data-mins]');
-    const orbBox=$('#orbBox'), leafBox=$('#leafBox'), branchBox=$('#branchBox'), starBox=$('#starBox');
-    const leafVeins=$('#leafVeins'), branchGroup=$('#branchGroup');
-    const starCanvas=$('#starCanvas'); const starCtx = starCanvas.getContext('2d');
+    var timeEl=$('#breathTime'), cueEl=$('#cue');
+    var vizWrap=$('#vizWrap'), vizScale=$('#vizScale'), vizSelect=$('#vizSelect');
+    var pauseBtn=$('#breathPause'); var durButtons=$$('#breathwork [data-mins]');
+    var orbBox=$('#orbBox'), leafBox=$('#leafBox'), branchBox=$('#branchBox'), starBox=$('#starBox');
+    var leafVeins=$('#leafVeins'), branchGroup=$('#branchGroup');
+    var starCanvas=$('#starCanvas'), starCtx = starCanvas && starCanvas.getContext ? starCanvas.getContext('2d') : null;
 
-    // Phases
-    const PHASES=[{name:'inhale',ms:4000,scale:1.65},{name:'hold',ms:2000,scale:null},{name:'exhale',ms:6000,scale:0.95}];
-    // at rest
-    const REST_SCALE = 1.05;
+    // Phases and scales
+    var PHASES=[{name:'inhale',ms:4000,scale:1.8},{name:'hold',ms:2000,scale:null},{name:'exhale',ms:6000,scale:0.9}];
+    var REST_SCALE = 1.05;
 
-    let running=false, paused=false;
-    let totalEnd=null, remaining=null;
-    let phaseIdx=0, phaseEnd=null, phaseRemaining=null;
-    let tickIv=null;
+    var running=false, paused=false;
+    var totalEnd=null, remaining=null;
+    var phaseIdx=0, phaseEnd=null, phaseRemaining=null;
+    var tickIv=null;
 
-    // --- Visual switcher
     function show(mode){
-      orbBox.style.display = (mode==='orb') ? 'block' : 'none';
-      leafBox.style.display = (mode==='leaf') ? 'block' : 'none';
-      branchBox.style.display = (mode==='branches') ? 'block' : 'none';
-      starBox.style.display = (mode==='star') ? 'block' : 'none';
-
-      // starfield animator on/off
+      orbBox.style.display   = (mode==='orb') ? 'block' : 'none';
+      leafBox.style.display  = (mode==='leaf') ? 'block' : 'none';
+      branchBox.style.display= (mode==='branches') ? 'block' : 'none';
+      starBox.style.display  = (mode==='star') ? 'block' : 'none';
       if(mode==='star') startStars(); else stopStars();
     }
-    vizSelect.addEventListener('change',()=>show(vizSelect.value));
+    vizSelect.addEventListener('change',function(){ show(vizSelect.value); });
     show('orb');
 
-    // --- Leaf veins (simple fractal fans)
+    // Leaf veins
     function drawLeaf(){
       leafVeins.innerHTML='';
-      const base = [{x:150,y:820}, {x:300,y:720}, {x:480,y:600}, {x:650,y:470}, {x:800,y:350}, {x:900,y:280}];
-      base.forEach((p,i)=>{
-        const angle = -Math.PI/8 - i*0.04;
-        const len = 120 + i*30;
-        for(let k=0;k<5;k++){
-          const t = len*(1 - k*0.18);
-          const dx = Math.cos(angle - k*0.08)*t;
-          const dy = Math.sin(angle - k*0.08)*t;
-          const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+      var base = [{x:150,y:820},{x:300,y:720},{x:480,y:600},{x:650,y:470},{x:800,y:350},{x:900,y:280}];
+      base.forEach(function(p,i){
+        var angle = -Math.PI/8 - i*0.04;
+        var len = 120 + i*30;
+        for(var k=0;k<5;k++){
+          var t = len*(1 - k*0.18);
+          var dx = Math.cos(angle - k*0.08)*t;
+          var dy = Math.sin(angle - k*0.08)*t;
+          var l = document.createElementNS('http://www.w3.org/2000/svg','line');
           l.setAttribute('x1', p.x); l.setAttribute('y1', p.y);
           l.setAttribute('x2', p.x+dx); l.setAttribute('y2', p.y+dy);
           l.setAttribute('class','vein'); l.setAttribute('opacity', String(0.9 - k*0.16));
@@ -298,19 +288,19 @@
     }
     drawLeaf();
 
-    // --- Branch fractal
+    // Branches
     function drawBranches(){
       branchGroup.innerHTML='';
-      const W=1000,H=1000;
+      var W=1000,H=1000;
       function seg(x1,y1,len,ang,depth){
         if(depth<=0||len<6) return;
-        const x2=x1+Math.cos(ang)*len, y2=y1+Math.sin(ang)*len;
-        const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+        var x2=x1+Math.cos(ang)*len, y2=y1+Math.sin(ang)*len;
+        var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
         ln.setAttribute('x1',x1); ln.setAttribute('y1',y1);
         ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
         ln.setAttribute('opacity', String(0.25+0.75*(depth/8)));
         branchGroup.appendChild(ln);
-        const nlen=len*(0.68+Math.random()*0.08);
+        var nlen=len*(0.68+Math.random()*0.08);
         seg(x2,y2,nlen,ang-0.6+Math.random()*0.15,depth-1);
         seg(x2,y2,nlen,ang+0.55-Math.random()*0.15,depth-1);
       }
@@ -320,47 +310,49 @@
     }
     drawBranches();
 
-    // --- Starfield (gentle twinkle)
-    let stars=[], animId=null, lastT=0;
+    // Starfield
+    var stars=[], animId=null, lastT=0;
     function initStars(){
-      const count = 180;
-      const W = starCanvas.width, H = starCanvas.height;
-      stars = new Array(count).fill(0).map(()=>({
-        x: Math.random()*W, y: Math.random()*H,
-        r: 0.7 + Math.random()*1.8,
-        a: 0.3 + Math.random()*0.7,
-        tw: 0.001 + Math.random()*0.002
-      }));
+      if(!starCanvas || !starCtx) return;
+      var count = 180;
+      var W = starCanvas.width, H = starCanvas.height;
+      stars = new Array(count);
+      for(var i=0;i<count;i++){
+        stars[i] = {
+          x: Math.random()*W, y: Math.random()*H,
+          r: 0.7 + Math.random()*1.8,
+          a: 0.3 + Math.random()*0.7,
+          tw: 0.001 + Math.random()*0.002
+        };
+      }
     }
     function renderStars(dt){
-      const W = starCanvas.width, H = starCanvas.height;
+      if(!starCanvas || !starCtx) return;
+      var W = starCanvas.width, H = starCanvas.height;
       starCtx.clearRect(0,0,W,H);
-      // subtle gradient background (darker)
-      const g = starCtx.createRadialGradient(W*0.5,H*0.4,0,W*0.5,H*0.6, W*0.7);
+      var g = starCtx.createRadialGradient(W*0.5,H*0.4,0,W*0.5,H*0.6,W*0.7);
       g.addColorStop(0,'#0b0f0e'); g.addColorStop(1,'#060909');
-      starCtx.fillStyle = g; starCtx.fillRect(0,0,W,H);
-      // stars
-      stars.forEach(s=>{
-        s.a += s.tw * dt; // phase advance
-        const glow = 0.6 + 0.4*Math.sin(s.a);
+      starCtx.fillStyle=g; starCtx.fillRect(0,0,W,H);
+      for(var i=0;i<stars.length;i++){
+        var s=stars[i];
+        s.a += s.tw * dt;
+        var glow = 0.6 + 0.4*Math.sin(s.a);
         starCtx.globalAlpha = 0.35 + 0.65*glow;
-        starCtx.beginPath();
-        starCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        starCtx.fillStyle = '#c9d6ff';
-        starCtx.fill();
-      });
+        starCtx.beginPath(); starCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        starCtx.fillStyle = '#c9d6ff'; starCtx.fill();
+      }
       starCtx.globalAlpha = 1;
     }
     function tickStars(ts){
       if(!lastT) lastT = ts;
-      const dt = ts - lastT; lastT = ts;
+      var dt = ts - lastT; lastT = ts;
       renderStars(dt);
-      animId = requestAnimationFrame(tickStars);
+      animId = window.requestAnimationFrame(tickStars);
     }
-    function startStars(){ if(animId) return; initStars(); lastT=0; animId=requestAnimationFrame(tickStars); }
-    function stopStars(){ if(animId) cancelAnimationFrame(animId); animId=null; }
+    function startStars(){ if(animId) return; initStars(); lastT=0; animId=window.requestAnimationFrame(tickStars); }
+    function stopStars(){ if(animId) window.cancelAnimationFrame(animId); animId=null; }
 
-    // --- Cue + scaling control
+    // Cue + scaling
     function setCue(name){
       if(!cueEl) return;
       if(name==='inhale') cueEl.textContent='Inhale — Be still';
@@ -369,26 +361,22 @@
       else cueEl.textContent='Ready to begin';
     }
     function setScaleForPhase(phase){
-      // sync the transition duration to the phase length for smooth breathing
       vizScale.style.transitionDuration = (phase.ms/1000)+'s';
-      // hold keeps current scale
       if(phase.scale!=null){
-        // clamp to avoid overshoot on tiny screens
-        const target = phase.scale;
-        vizScale.style.transform = `translate(-50%,-50%) scale(${target})`;
+        vizScale.style.transform = 'translate(-50%,-50%) scale('+phase.scale+')';
       }
     }
     function resetScale(){
       vizScale.style.transitionDuration = '0.4s';
-      vizScale.style.transform = `translate(-50%,-50%) scale(${REST_SCALE})`;
+      vizScale.style.transform = 'translate(-50%,-50%) scale('+REST_SCALE+')';
     }
     resetScale();
 
     function stopTick(){ if(tickIv){ clearInterval(tickIv); tickIv=null; } }
 
     function update(){
-      const now=Date.now();
-      const rem=Math.max(0, totalEnd-now);
+      var now=Date.now();
+      var rem=Math.max(0, totalEnd-now);
       if(timeEl) timeEl.textContent=fmt(rem);
 
       if(rem<=0){
@@ -400,25 +388,26 @@
       }
       if(now>=phaseEnd){
         phaseIdx=(phaseIdx+1)%PHASES.length;
-        const p=PHASES[phaseIdx];
+        var p=PHASES[phaseIdx];
         phaseEnd=now+p.ms;
         setCue(p.name);
         setScaleForPhase(p);
       }
     }
     function start(mins){
-      const total = mins*60*1000;
+      var total = mins*60*1000;
       running=true; paused=false;
       totalEnd = Date.now()+total;
-      phaseIdx=0; const p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
+      phaseIdx=0; var p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
       setCue(p.name);
       setScaleForPhase(p);
       if(pauseBtn){ pauseBtn.disabled=false; pauseBtn.textContent='Pause'; }
       stopTick(); tickIv=setInterval(update, 200);
+      update(); // immediate tick so UI updates right away
     }
     function pause(){
       if(!running || paused) return;
-      const now=Date.now();
+      var now=Date.now();
       remaining = Math.max(0, totalEnd-now);
       phaseRemaining = Math.max(0, phaseEnd-now);
       paused=true; stopTick();
@@ -426,35 +415,56 @@
     }
     function resume(){
       if(!running || !paused) return;
-      const now=Date.now();
+      var now=Date.now();
       totalEnd = now + remaining;
       phaseEnd  = now + phaseRemaining;
       paused=false;
       if(pauseBtn) pauseBtn.textContent='Pause';
       stopTick(); tickIv=setInterval(update, 200);
+      update();
     }
 
-    // Fullscreen
-    const fsBtn=$('#fsToggle');
-    function toggleFS(){ const el=vizWrap; if(!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.(); }
-    fsBtn.addEventListener('click', toggleFS);
+    // Fullscreen (no optional chaining; includes WebKit fallbacks)
+    var fsBtn=$('#fsToggle');
+    function enterFS(el){
+      try{
+        if(el.requestFullscreen) el.requestFullscreen();
+        else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen(); // Safari
+        else if(el.msRequestFullscreen) el.msRequestFullscreen();
+      }catch(e){}
+    }
+    function exitFS(){
+      try{
+        if(document.exitFullscreen) document.exitFullscreen();
+        else if(document.webkitExitFullscreen) document.webkitExitFullscreen(); // Safari
+        else if(document.msExitFullscreen) document.msExitFullscreen();
+      }catch(e){}
+    }
+    function toggleFS(){
+      if(!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement){
+        enterFS(vizWrap);
+      }else{
+        exitFS();
+      }
+    }
+    if(fsBtn) fsBtn.addEventListener('click', toggleFS);
 
     // Wire durations + pause
-    durButtons.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const mins=parseInt(btn.getAttribute('data-mins'),10)||3;
+    durButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var mins=parseInt(btn.getAttribute('data-mins'),10)||3;
         start(mins);
       });
     });
-    pauseBtn.addEventListener('click', ()=>{ if(!running) return; paused?resume():pause(); });
+    if(pauseBtn) pauseBtn.addEventListener('click', function(){ if(!running) return; paused?resume():pause(); });
   })();
 
   /* =======================
      POMODORO
   ======================= */
   (function(){
-    const pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), verse=$('#pomoVerse'), toast=$('#toast');
-    const verses=[
+    var pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'), verse=$('#pomoVerse'), toast=$('#toast');
+    var verses=[
       '“Be still, and know that I am God.” — Psalm 46:10',
       '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
       '“Draw near to God, and He will draw near to you.” — James 4:8',
@@ -465,17 +475,17 @@
       '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
     ];
 
-    const FULL = 25*60*1000;
-    let ends=null, rest=null, iv=null;
+    var FULL = 25*60*1000;
+    var ends=null, rest=null, iv=null;
 
     function up(ms){ if(pomo) pomo.textContent=fmt(ms); }
     function startP(){
       if(verse) verse.textContent = verses[Math.floor(Math.random()*verses.length)];
-      const now=Date.now(); ends=now + (rest ?? FULL); rest=null;
+      var now=Date.now(); ends=now + (rest ?? FULL); rest=null;
       if(iv) clearInterval(iv);
-      iv=setInterval(()=>{
-        const rem=Math.max(0, ends-Date.now()); up(rem);
-        if(rem<=0){ clearInterval(iv); iv=null; if(toast){ toast.style.display='block'; setTimeout(()=>toast.style.display='none', 4000);} }
+      iv=setInterval(function(){
+        var rem=Math.max(0, ends-Date.now()); up(rem);
+        if(rem<=0){ clearInterval(iv); iv=null; if(toast){ toast.style.display='block'; setTimeout(function(){toast.style.display='none'}, 4000);} }
       },250);
     }
     function pauseP(){ if(!iv) return; rest=Math.max(0, ends-Date.now()); clearInterval(iv); iv=null; }
@@ -491,18 +501,18 @@
      Auto-height message for iframes (harmless if standalone)
   ======================= */
   (function () {
-    function elementBottom(el){ if(!el) return 0; const r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
+    function elementBottom(el){ if(!el) return 0; var r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
     function pageHeight() {
-      const app = document.getElementById('cr-app'); const foot = document.querySelector('footer');
-      const b=document.body, d=document.documentElement;
-      const h=Math.max(elementBottom(foot),elementBottom(app),b?b.scrollHeight:0,d?d.scrollHeight:0,b?b.offsetHeight:0,d?d.offsetHeight:0);
+      var app = document.getElementById('cr-app'); var foot = document.querySelector('footer');
+      var b=document.body, d=document.documentElement;
+      var h=Math.max(elementBottom(foot),elementBottom(app),b?b.scrollHeight:0,d?d.scrollHeight:0,b?b.offsetHeight:0,d?d.offsetHeight:0);
       return Math.max(0, Math.floor(h-2));
     }
     function postHeight(){ try{ window.parent.postMessage({type:"CR_HEIGHT",h:pageHeight()},"*"); }catch(e){} }
     window.addEventListener("load", postHeight);
     window.addEventListener("resize", postHeight);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(postHeight);
-    Array.prototype.forEach.call(document.querySelectorAll("iframe"), i=>i.addEventListener("load", ()=>{ setTimeout(postHeight,50); setTimeout(postHeight,400); }));
+    Array.prototype.forEach.call(document.querySelectorAll("iframe"), function(i){ i.addEventListener("load", function(){ setTimeout(postHeight,50); setTimeout(postHeight,400); }); });
     setTimeout(postHeight,150); setTimeout(postHeight,600); setTimeout(postHeight,1500); setTimeout(postHeight,3000);
   })();
 </script>
