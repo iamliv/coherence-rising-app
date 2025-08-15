@@ -298,43 +298,63 @@
   /* =======================
      Robust auto-height for Ontraport embed
   ======================= */
-  (function () {
-    function pageHeight() {
-      var app = document.getElementById('cr-app');
-      var foot = document.querySelector('footer');
+/* Ultra-robust auto-height: precise measurement + late updates */
+(function () {
+  function elementBottom(el){
+    if(!el) return 0;
+    var r = el.getBoundingClientRect();
+    return Math.ceil((window.scrollY || window.pageYOffset || 0) + r.bottom);
+  }
 
-      function bottom(el){
-        if(!el) return 0;
-        var r = el.getBoundingClientRect();
-        return Math.ceil(r.top + window.scrollY + r.height);
-      }
+  function pageHeight() {
+    var app = document.getElementById('cr-app');
+    var foot = document.querySelector('footer');
+    var b = document.body, d = document.documentElement;
 
-      var h = Math.max(
-        bottom(foot),
-        bottom(app),
-        document.body ? document.body.scrollHeight : 0,
-        document.documentElement ? document.documentElement.scrollHeight : 0
-      );
+    // Consider every reasonable metric; take the maximum.
+    var h = Math.max(
+      elementBottom(foot),
+      elementBottom(app),
+      b ? b.scrollHeight : 0,
+      d ? d.scrollHeight : 0,
+      b ? b.offsetHeight : 0,
+      d ? d.offsetHeight : 0,
+      b ? b.clientHeight : 0,
+      d ? d.clientHeight : 0
+    );
 
-      return Math.max(0, h - 1); // nudge -1px to avoid accidental overflow
-    }
+    // Return an integer; subtract a hair to avoid accidental parent overflow.
+    return Math.max(0, Math.floor(h - 2));
+  }
 
-    function postHeight() {
-      try {
-        window.parent.postMessage({ type: "CR_HEIGHT", h: pageHeight() }, "*");
-      } catch (e) {}
-    }
+  function postHeight() {
+    try {
+      window.parent.postMessage({ type: "CR_HEIGHT", h: pageHeight() }, "*");
+    } catch (e) {}
+  }
 
-    window.addEventListener("load", postHeight);
-    window.addEventListener("resize", postHeight);
-    if ("ResizeObserver" in window) {
-      new ResizeObserver(postHeight).observe(document.body);
-    }
-    setTimeout(postHeight, 200);
-    setTimeout(postHeight, 600);
-    setTimeout(postHeight, 1500);
-    setTimeout(postHeight, 3000);
-  })();
+  // Initial + resize + observer + retries while things settle
+  window.addEventListener("load", postHeight);
+  window.addEventListener("resize", postHeight);
+  if ("ResizeObserver" in window) new ResizeObserver(postHeight).observe(document.body);
+
+  // Fonts (Google Fonts can shift layout)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(postHeight);
+  }
+
+  // Any iframes inside (Spotify) can shift layout as they render
+  Array.prototype.forEach.call(document.querySelectorAll("iframe"), function (ifr) {
+    ifr.addEventListener("load", function(){ setTimeout(postHeight, 50); setTimeout(postHeight, 400); });
+  });
+
+  // Extra retries for slow layout
+  setTimeout(postHeight, 150);
+  setTimeout(postHeight, 600);
+  setTimeout(postHeight, 1500);
+  setTimeout(postHeight, 3000);
+})();
+
   </script>
 </body>
 </html>
