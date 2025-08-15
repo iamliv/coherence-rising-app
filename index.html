@@ -10,63 +10,85 @@
 <style>
   :root{
     --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
-    --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131;
+    --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131; --ink-weak:#4b5563;
+    --bg:var(--ivory); --card:#fff; --accent:var(--olive);
+    --orb:#ffffffc0; --cue:#1f2937; --viz-line:#24423a;
     --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
-    --bg: var(--ivory);
-    --card: #fff;
-    --ink-weak:#475569;
-    --orb:#ffffffbf;
-    --cue:#1f2937;
-    --accent: var(--olive);
-    --viz-line:#24423a;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#0e1012; --card:#13161a; --ink:#e6e9ee; --ink-weak:#aab2bf; --orb:#ffffff1a; --cue:#e6e9ee; --accent:#7aa57a; --viz-line:#7aa57a; }
+    :root{ --bg:#0e1012; --card:#13161a; --ink:#e6e9ee; --ink-weak:#aab2bf; --accent:#7aa57a; --orb:#ffffff26; --cue:#e6e9ee; --viz-line:#7aa57a; }
   }
   body[data-theme="night"]{
     --bg:#0b0e11; --card:#101317; --ink:#e5ecf3; --ink-weak:#a6b0bf;
-    --orb:#ffffff22; --cue:#f2f5f9; --accent:#7aa57a; --viz-line:#6fa46f;
+    --accent:#7aa57a; --orb:#ffffff22; --cue:#eef3f8; --viz-line:#6fa46f;
   }
 
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);overflow:auto}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
   *{box-sizing:border-box}
-  #cr-app{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;max-width:960px;margin:0 auto;padding:1rem 1rem 8px}
+  #cr-app{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;max-width:980px;margin:0 auto;padding:1rem 1rem 10px}
   .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:1rem;margin:1rem 0}
   .header{border-radius:24px;text-align:center;padding:28px 20px;background:linear-gradient(135deg,var(--sky),var(--lav));color:#102232}
-  .header h1{margin:.35rem 0 0;font-weight:700;font-size:clamp(30px,7vw,48px);line-height:1.12}
-  .header .byline{font-size:clamp(14px,2.7vw,16px);font-weight:600;opacity:.85;margin:.2rem 0 .6rem}
+  .header h1{margin:.3rem 0 0;font-weight:700;font-size:clamp(30px,7vw,48px);line-height:1.12}
+  .header .byline{font-size:clamp(14px,2.7vw,16px);font-weight:600;opacity:.9;margin:.2rem 0 .6rem}
   .header .subtitle{margin:0;font-size:clamp(18px,3.3vw,22px);line-height:1.5;opacity:.9}
+  nav a{display:inline-block;background:#ffffffd9;color:#1f2937;border:1px solid #0001;border-radius:999px;padding:.35rem .75rem;text-decoration:none}
   .row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   .actions{display:flex;gap:.5rem;flex-wrap:wrap}
-  nav a{display:inline-block;background:#ffffffd9;color:#1f2937;border:1px solid #0000001f;border-radius:999px;padding:.35rem .75rem;text-decoration:none}
   .btn{border:0;border-radius:12px;padding:.6rem .9rem;background:var(--accent);color:#132b16;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(163,177,138,.35)}
   .btn.secondary{background:var(--taupe);color:#2b2b2b}
-  .btn.ghost{background:transparent;border:1px solid #00000033;color:var(--ink)}
-  .select, .toggle{border:1px solid #00000033;background:var(--card);color:var(--ink);border-radius:10px;padding:.5rem .6rem}
-
+  .btn.ghost{background:transparent;border:1px solid #0003;color:var(--ink)}
+  .select{border:1px solid #0003;background:var(--card);color:var(--ink);border-radius:10px;padding:.5rem .6rem}
   .timer{font-variant-numeric:tabular-nums;font-size:2rem;font-weight:700}
 
-  /* Breathwork visual container */
-  .viz-wrap{position:relative;width:100%;aspect-ratio:1.6/1;border-radius:14px;overflow:hidden;background:
-    radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
-    radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
-    radial-gradient(120% 100% at 0% 100%, var(--olive), transparent 55%)
+  /* Breathwork visual container — tall by default so visuals can grow big */
+  .viz-wrap{
+    position:relative;width:100%;
+    height:min(72vh, 90vw); /* tall on phones, not wider than viewport */
+    border-radius:14px;overflow:hidden;
+    background:radial-gradient(100% 130% at 20% 0%, var(--gold), transparent 60%),
+               radial-gradient(120% 100% at 100% 100%, var(--lav), transparent 55%),
+               radial-gradient(120% 100% at 0% 100%, var(--olive), transparent 55%);
   }
-  body[data-theme="night"] .viz-wrap{background:linear-gradient(180deg,#0d1412,#0b0f0d)}
-  /* Orb mode */
-  .orb{position:absolute;left:50%;top:50%;width:120px;height:120px;background:var(--orb);border:2px solid #00000033;border-radius:50%;
-        transform:translate(-50%,-50%) scale(1);transition:transform 3.4s ease-in-out;box-shadow:inset 0 0 40px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
-  .cue-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;font-weight:700;letter-spacing:.2px;
-    color:var(--cue);font-size:clamp(18px,4vw,24px);padding:.25rem .5rem;border-radius:8px;background:transparent}
-  .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#00000020;color:#fff;padding:.25rem .6rem;border-radius:999px;font-size:.85rem}
+  body[data-theme="night"] .viz-wrap{background:linear-gradient(180deg,#0c1210,#0a0f0d)}
 
-  /* SVG visuals */
-  .svg-fit{position:absolute;inset:0;width:100%;height:100%}
+  /* One unified scale group that we animate for ALL visuals */
+  .viz-scale{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(1);
+    transform-origin:center center; will-change:transform;
+    transition:transform 3.6s ease-in-out; /* duration updated live per phase */
+  }
+
+  /* Orb (div) */
+  .orb{width:min(55vmin, 80vw);height:min(55vmin, 80vw);background:var(--orb);
+       border:2px solid #0003;border-radius:50%;
+       box-shadow:inset 0 0 80px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
+  /* SVGs fill an inner square so scaling is similar to orb */
+  .svg-box{width:min(60vmin, 88vw);height:min(60vmin, 88vw)}
+  .svg-fit{width:100%;height:100%}
+
+  /* Leaf */
   .leaf-vein line,.leaf-vein path{stroke:var(--viz-line);stroke-opacity:.9}
   .leaf-vein .mid{stroke-width:3}
   .leaf-vein .vein{stroke-width:1.2}
+
+  /* Branches */
   .branches line{stroke:var(--viz-line);stroke-width:1.4;stroke-linecap:round}
-  .fade{opacity:.75}
+  .fade{opacity:.8}
+
+  /* Starfield canvas fills its box */
+  #starCanvas{display:block;width:100%;height:100%}
+
+  /* Cue centered for ALL visuals */
+  .cue-center{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    text-align:center;font-weight:700;letter-spacing:.2px;color:var(--cue);
+    font-size:clamp(20px,5vw,28px);padding:.25rem .5rem;border-radius:8px;background:transparent;
+    text-shadow:0 1px 2px rgba(0,0,0,.25);
+    pointer-events:none;
+  }
+
+  .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#0002;color:#fff;
+        padding:.25rem .6rem;border-radius:999px;font-size:.85rem}
 
   footer{text-align:center;color:var(--ink-weak);padding:10px 12px}
   @media (min-width:860px){ .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem} }
@@ -88,7 +110,7 @@
   <!-- Breathwork -->
   <section id="breathwork" class="card" aria-labelledby="breathwork-title">
     <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
-    <p style="margin:.25rem 0 .75rem">Guided breathing with gentle cues. Choose your visual and optionally go fullscreen.</p>
+    <p style="margin:.25rem 0 .75rem">Choose a visual, go fullscreen if you like, and follow the cue in the center.</p>
 
     <div class="row" style="justify-content:space-between;align-items:center">
       <div class="actions" role="group" aria-label="Breath durations">
@@ -104,6 +126,7 @@
           <option value="orb">Orb</option>
           <option value="leaf">Fractal Leaf</option>
           <option value="branches">Fractal Branches</option>
+          <option value="star">Starfield</option>
         </select>
         <button id="fsToggle" class="btn ghost" aria-label="Toggle Fullscreen">Fullscreen</button>
       </div>
@@ -112,33 +135,48 @@
     <div class="grid" style="margin-top:.75rem">
       <div>
         <div class="timer" id="breathTime">00:00</div>
+
+        <!-- Visuals container -->
         <div id="vizWrap" class="viz-wrap" tabindex="0" aria-live="polite">
-          <!-- Orb mode -->
-          <div id="orb" class="orb"></div>
+          <!-- Unified scale group -->
+          <div id="vizScale" class="viz-scale">
+            <!-- Orb -->
+            <div id="orbBox" class="orb" aria-hidden="false"></div>
+
+            <!-- Leaf -->
+            <div id="leafBox" class="svg-box" aria-hidden="true" style="display:none">
+              <svg id="leafSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Fractal leaf">
+                <defs>
+                  <radialGradient id="lg" cx="50%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#0f1a16"/>
+                    <stop offset="100%" stop-color="#0a110e"/>
+                  </radialGradient>
+                </defs>
+                <rect x="0" y="0" width="1000" height="1000" fill="url(#lg)"/>
+                <g class="leaf-vein" fill="none">
+                  <path class="mid" d="M120,880 C300,760 520,600 880,200"/>
+                  <g id="leafVeins"></g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Branches -->
+            <div id="branchBox" class="svg-box" aria-hidden="true" style="display:none">
+              <svg id="branchSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Fractal branches">
+                <rect x="0" y="0" width="1000" height="1000" fill="#0a100e"/>
+                <g id="branchGroup" class="branches"></g>
+              </svg>
+            </div>
+
+            <!-- Starfield -->
+            <div id="starBox" class="svg-box" aria-hidden="true" style="display:none">
+              <canvas id="starCanvas" width="1000" height="1000" aria-label="Gentle starfield"></canvas>
+            </div>
+          </div>
+
+          <!-- Cue (centered for ALL modes) -->
           <div id="cue" class="cue-center">Ready to begin</div>
           <div class="hint fade">Press a duration to start</div>
-
-          <!-- Leaf SVG -->
-          <svg id="leafSVG" class="svg-fit" viewBox="0 0 1000 600" aria-hidden="true" style="display:none">
-            <defs>
-              <linearGradient id="leafGrad" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="#1b2c27"/>
-                <stop offset="100%" stop-color="#0d1412"/>
-              </linearGradient>
-            </defs>
-            <rect x="0" y="0" width="1000" height="600" fill="url(#leafGrad)"/>
-            <g class="leaf-vein" fill="none">
-              <path class="mid" d="M150,500 C300,420 500,320 850,120" />
-              <!-- veins will be added by JS -->
-              <g id="leafVeins"></g>
-            </g>
-          </svg>
-
-          <!-- Branches SVG -->
-          <svg id="branchSVG" class="svg-fit" viewBox="0 0 1000 600" aria-hidden="true" style="display:none">
-            <rect x="0" y="0" width="1000" height="600" fill="#0c1210"/>
-            <g id="branchGroup" class="branches" />
-          </svg>
         </div>
       </div>
 
@@ -175,7 +213,7 @@
       allow="autoplay; encrypted-media; picture-in-picture"
       title="Focus LoFi"></iframe>
 
-    <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid #00000033;border-radius:10px;background:var(--card)">
+    <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid #0003;border-radius:10px;background:var(--card)">
       Pomodoro complete! Take a short break. 🌿
     </div>
   </section>
@@ -206,30 +244,148 @@
   const fmt=ms=>{ const s=Math.max(0,Math.floor(ms/1000)); return pad(Math.floor(s/60))+':'+pad(s%60); };
 
   /* =======================
-     BREATHWORK (pause/resume, cue-in-orb, visuals, fullscreen)
+     BREATHWORK (phases, scaling all visuals, fullscreen, starfield)
   ======================= */
   (function(){
-    const timeEl=$('#breathTime'), cueEl=$('#cue'), orb=$('#orb');
-    const vizWrap=$('#vizWrap'), vizSelect=$('#vizSelect'), fsBtn=$('#fsToggle');
+    const timeEl=$('#breathTime'), cueEl=$('#cue');
+    const vizWrap=$('#vizWrap'), vizScale=$('#vizScale'), vizSelect=$('#vizSelect');
     const pauseBtn=$('#breathPause'); const durButtons=$$('#breathwork [data-mins]');
-    const leafSVG=$('#leafSVG'), leafVeins=$('#leafVeins'), branchSVG=$('#branchSVG'), branchGroup=$('#branchGroup');
+    const orbBox=$('#orbBox'), leafBox=$('#leafBox'), branchBox=$('#branchBox'), starBox=$('#starBox');
+    const leafVeins=$('#leafVeins'), branchGroup=$('#branchGroup');
+    const starCanvas=$('#starCanvas'); const starCtx = starCanvas.getContext('2d');
 
-    // Phases: inhale 4s, hold 2s, exhale 6s
-    const PHASES=[{name:'inhale',ms:4000},{name:'hold',ms:2000},{name:'exhale',ms:6000}];
+    // Phases
+    const PHASES=[{name:'inhale',ms:4000,scale:1.65},{name:'hold',ms:2000,scale:null},{name:'exhale',ms:6000,scale:0.95}];
+    // at rest
+    const REST_SCALE = 1.05;
 
     let running=false, paused=false;
     let totalEnd=null, remaining=null;
     let phaseIdx=0, phaseEnd=null, phaseRemaining=null;
     let tickIv=null;
 
-    function setCue(name){
-      if(!cueEl||!orb) return;
-      if(name==='inhale'){ cueEl.textContent='Inhale — Be still'; orb.style.transform='translate(-50%,-50%) scale(1.25)'; }
-      else if(name==='hold'){ cueEl.textContent='Hold — and know'; }
-      else if(name==='exhale'){ cueEl.textContent='Exhale — and know'; orb.style.transform='translate(-50%,-50%) scale(0.85)'; }
-      else { cueEl.textContent='Ready to begin'; orb.style.transform='translate(-50%,-50%) scale(1)'; }
+    // --- Visual switcher
+    function show(mode){
+      orbBox.style.display = (mode==='orb') ? 'block' : 'none';
+      leafBox.style.display = (mode==='leaf') ? 'block' : 'none';
+      branchBox.style.display = (mode==='branches') ? 'block' : 'none';
+      starBox.style.display = (mode==='star') ? 'block' : 'none';
+
+      // starfield animator on/off
+      if(mode==='star') startStars(); else stopStars();
     }
+    vizSelect.addEventListener('change',()=>show(vizSelect.value));
+    show('orb');
+
+    // --- Leaf veins (simple fractal fans)
+    function drawLeaf(){
+      leafVeins.innerHTML='';
+      const base = [{x:150,y:820}, {x:300,y:720}, {x:480,y:600}, {x:650,y:470}, {x:800,y:350}, {x:900,y:280}];
+      base.forEach((p,i)=>{
+        const angle = -Math.PI/8 - i*0.04;
+        const len = 120 + i*30;
+        for(let k=0;k<5;k++){
+          const t = len*(1 - k*0.18);
+          const dx = Math.cos(angle - k*0.08)*t;
+          const dy = Math.sin(angle - k*0.08)*t;
+          const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+          l.setAttribute('x1', p.x); l.setAttribute('y1', p.y);
+          l.setAttribute('x2', p.x+dx); l.setAttribute('y2', p.y+dy);
+          l.setAttribute('class','vein'); l.setAttribute('opacity', String(0.9 - k*0.16));
+          leafVeins.appendChild(l);
+        }
+      });
+    }
+    drawLeaf();
+
+    // --- Branch fractal
+    function drawBranches(){
+      branchGroup.innerHTML='';
+      const W=1000,H=1000;
+      function seg(x1,y1,len,ang,depth){
+        if(depth<=0||len<6) return;
+        const x2=x1+Math.cos(ang)*len, y2=y1+Math.sin(ang)*len;
+        const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+        ln.setAttribute('x1',x1); ln.setAttribute('y1',y1);
+        ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
+        ln.setAttribute('opacity', String(0.25+0.75*(depth/8)));
+        branchGroup.appendChild(ln);
+        const nlen=len*(0.68+Math.random()*0.08);
+        seg(x2,y2,nlen,ang-0.6+Math.random()*0.15,depth-1);
+        seg(x2,y2,nlen,ang+0.55-Math.random()*0.15,depth-1);
+      }
+      seg(W*0.5,H*0.98,170,-Math.PI/2,9);
+      seg(W*0.2,H*0.95,120,-Math.PI/2.2,8);
+      seg(W*0.8,H*0.96,130,-Math.PI/1.8,8);
+    }
+    drawBranches();
+
+    // --- Starfield (gentle twinkle)
+    let stars=[], animId=null, lastT=0;
+    function initStars(){
+      const count = 180;
+      const W = starCanvas.width, H = starCanvas.height;
+      stars = new Array(count).fill(0).map(()=>({
+        x: Math.random()*W, y: Math.random()*H,
+        r: 0.7 + Math.random()*1.8,
+        a: 0.3 + Math.random()*0.7,
+        tw: 0.001 + Math.random()*0.002
+      }));
+    }
+    function renderStars(dt){
+      const W = starCanvas.width, H = starCanvas.height;
+      starCtx.clearRect(0,0,W,H);
+      // subtle gradient background (darker)
+      const g = starCtx.createRadialGradient(W*0.5,H*0.4,0,W*0.5,H*0.6, W*0.7);
+      g.addColorStop(0,'#0b0f0e'); g.addColorStop(1,'#060909');
+      starCtx.fillStyle = g; starCtx.fillRect(0,0,W,H);
+      // stars
+      stars.forEach(s=>{
+        s.a += s.tw * dt; // phase advance
+        const glow = 0.6 + 0.4*Math.sin(s.a);
+        starCtx.globalAlpha = 0.35 + 0.65*glow;
+        starCtx.beginPath();
+        starCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        starCtx.fillStyle = '#c9d6ff';
+        starCtx.fill();
+      });
+      starCtx.globalAlpha = 1;
+    }
+    function tickStars(ts){
+      if(!lastT) lastT = ts;
+      const dt = ts - lastT; lastT = ts;
+      renderStars(dt);
+      animId = requestAnimationFrame(tickStars);
+    }
+    function startStars(){ if(animId) return; initStars(); lastT=0; animId=requestAnimationFrame(tickStars); }
+    function stopStars(){ if(animId) cancelAnimationFrame(animId); animId=null; }
+
+    // --- Cue + scaling control
+    function setCue(name){
+      if(!cueEl) return;
+      if(name==='inhale') cueEl.textContent='Inhale — Be still';
+      else if(name==='hold') cueEl.textContent='Hold — and know';
+      else if(name==='exhale') cueEl.textContent='Exhale — and know';
+      else cueEl.textContent='Ready to begin';
+    }
+    function setScaleForPhase(phase){
+      // sync the transition duration to the phase length for smooth breathing
+      vizScale.style.transitionDuration = (phase.ms/1000)+'s';
+      // hold keeps current scale
+      if(phase.scale!=null){
+        // clamp to avoid overshoot on tiny screens
+        const target = phase.scale;
+        vizScale.style.transform = `translate(-50%,-50%) scale(${target})`;
+      }
+    }
+    function resetScale(){
+      vizScale.style.transitionDuration = '0.4s';
+      vizScale.style.transform = `translate(-50%,-50%) scale(${REST_SCALE})`;
+    }
+    resetScale();
+
     function stopTick(){ if(tickIv){ clearInterval(tickIv); tickIv=null; } }
+
     function update(){
       const now=Date.now();
       const rem=Math.max(0, totalEnd-now);
@@ -239,6 +395,7 @@
         stopTick(); running=false; paused=false;
         if(pauseBtn){ pauseBtn.disabled=true; pauseBtn.textContent='Pause'; }
         setCue('ready'); if(timeEl) timeEl.textContent='00:00';
+        resetScale();
         return;
       }
       if(now>=phaseEnd){
@@ -246,6 +403,7 @@
         const p=PHASES[phaseIdx];
         phaseEnd=now+p.ms;
         setCue(p.name);
+        setScaleForPhase(p);
       }
     }
     function start(mins){
@@ -254,6 +412,7 @@
       totalEnd = Date.now()+total;
       phaseIdx=0; const p=PHASES[phaseIdx]; phaseEnd=Date.now()+p.ms;
       setCue(p.name);
+      setScaleForPhase(p);
       if(pauseBtn){ pauseBtn.disabled=false; pauseBtn.textContent='Pause'; }
       stopTick(); tickIv=setInterval(update, 200);
     }
@@ -275,65 +434,9 @@
       stopTick(); tickIv=setInterval(update, 200);
     }
 
-    // Visual switching
-    function show(mode){
-      // hide all
-      orb.style.display = (mode==='orb') ? 'block' : 'none';
-      leafSVG.style.display = (mode==='leaf') ? 'block' : 'none';
-      branchSVG.style.display = (mode==='branches') ? 'block' : 'none';
-    }
-    vizSelect.addEventListener('change',()=>show(vizSelect.value));
-    show('orb');
-
-    // Generate Leaf veins (simple fractal-ish fans)
-    function drawLeaf(){
-      leafVeins.innerHTML='';
-      const base = [{x:160,y:495}, {x:300,y:430}, {x:450,y:360}, {x:620,y:280}, {x:780,y:200}, {x:900,y:150}];
-      base.forEach((p,i)=>{
-        const angle = -Math.PI/8 - i*0.04;
-        const len = 70 + i*20;
-        for(let k=0;k<4;k++){
-          const t = len*(1 - k*0.18);
-          const dx = Math.cos(angle - k*0.08)*t;
-          const dy = Math.sin(angle - k*0.08)*t;
-          const l = document.createElementNS('http://www.w3.org/2000/svg','line');
-          l.setAttribute('x1', p.x); l.setAttribute('y1', p.y);
-          l.setAttribute('x2', p.x+dx); l.setAttribute('y2', p.y+dy);
-          l.setAttribute('class','vein'); l.setAttribute('opacity', String(0.9 - k*0.18));
-          leafVeins.appendChild(l);
-        }
-      });
-    }
-    drawLeaf();
-
-    // Generate Branch fractal
-    function drawBranches(){
-      branchGroup.innerHTML='';
-      const W=1000,H=600;
-      function seg(x1,y1,len,ang,depth){
-        if(depth<=0||len<6) return;
-        const x2=x1+Math.cos(ang)*len, y2=y1+Math.sin(ang)*len;
-        const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
-        ln.setAttribute('x1',x1); ln.setAttribute('y1',y1);
-        ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
-        ln.setAttribute('opacity', String(0.2+0.8*(depth/8)));
-        branchGroup.appendChild(ln);
-        const nlen=len*(0.68+Math.random()*0.08);
-        seg(x2,y2,nlen,ang-0.6+Math.random()*0.15,depth-1);
-        seg(x2,y2,nlen,ang+0.55-Math.random()*0.15,depth-1);
-      }
-      seg(W*0.5,H*0.95,120,-Math.PI/2,8);
-      seg(W*0.2,H*0.9,90,-Math.PI/2.2,7);
-      seg(W*0.8,H*0.92,95,-Math.PI/1.8,7);
-    }
-    drawBranches();
-
     // Fullscreen
-    function toggleFS(){
-      const el = vizWrap;
-      if (!document.fullscreenElement) el.requestFullscreen?.();
-      else document.exitFullscreen?.();
-    }
+    const fsBtn=$('#fsToggle');
+    function toggleFS(){ const el=vizWrap; if(!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.(); }
     fsBtn.addEventListener('click', toggleFS);
 
     // Wire durations + pause
@@ -344,8 +447,6 @@
       });
     });
     pauseBtn.addEventListener('click', ()=>{ if(!running) return; paused?resume():pause(); });
-
-    // When entering Night Mode, keep visuals subtle (no change needed—CSS variables handle it)
   })();
 
   /* =======================
@@ -363,10 +464,10 @@
       '“Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3',
       '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
     ];
+
     const FULL = 25*60*1000;
     let ends=null, rest=null, iv=null;
 
-    const fmt=(ms)=>{ const s=Math.max(0,Math.floor(ms/1000)); const mm=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); return mm+':'+ss; };
     function up(ms){ if(pomo) pomo.textContent=fmt(ms); }
     function startP(){
       if(verse) verse.textContent = verses[Math.floor(Math.random()*verses.length)];
@@ -387,7 +488,7 @@
   })();
 
   /* =======================
-     (Optional) Auto-height postMessage for embeds
+     Auto-height message for iframes (harmless if standalone)
   ======================= */
   (function () {
     function elementBottom(el){ if(!el) return 0; const r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
