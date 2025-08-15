@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+    Breath of Faith — Standalone Thank You Page (regenerated)
+    Location: /thank-you/index.html
+
+    PURPOSE
+    - Simple, fast, mobile-first confirmation page hosted on GitHub Pages.
+    - Meant to be embedded INLINE inside an Ontraport custom page via <iframe>.
+    - Posts its own height to the parent for auto-resizing (see script at bottom).
+
+    NOTES
+    - No external dependencies; all CSS is inline for reliability.
+    - Secondary CTA removed per request.
+  -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Thank You — Breath of Faith</title>
+  <style>
+    /* ---------------------------------------------
+       COLOR SYSTEM (from your design guidelines)
+       --------------------------------------------- */
+    :root {
+      --soft-gold: #F5E6A1;
+      --dusty-lavender: #C8BFE7;
+      --olive-green: #A3B18A;
+      --warm-taupe: #D8CFC4;
+      --sky-blue: #A7C7E7;
+      --slate-gray: #7D8C8C;
+      --ivory-white: #FDF6EC;
+
+      /* Base (light mode) */
+      --bg: #FAF8F3;           /* near-ivory background */
+      --panel: #FFFFFF;        /* card surface */
+      --text: #2A2F2F;         /* high-contrast body text */
+      --muted: #4D5A5A;        /* secondary text */
+      --accent: var(--olive-green);
+      --accent-contrast: #0F120F; /* text on accent */
+      --ring: rgba(163, 177, 138, 0.6); /* focus ring */
+      --border: #E9E4DA;
+    }
+
+    /* Auto dark-mode using user preference */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0F1414;          /* night backdrop */
+        --panel: #171D1D;       /* elevated panel */
+        --text: #F6F6F2;        /* body text */
+        --muted: #B7C1C1;       /* secondary text */
+        --accent: #A3B18A;      /* olive stays consistent */
+        --accent-contrast: #121512;
+        --ring: rgba(163, 177, 138, 0.5);
+        --border: #2A3232;
+      }
+    }
+
+    /* ---------------------------------------------
+       RESET + TYPOGRAPHY
+       --------------------------------------------- */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ---------------------------------------------
+       LAYOUT
+       --------------------------------------------- */
+    .wrapper {
+      min-height: 100%;
+      display: grid;
+      place-items: center;     /* centers card vertically & horizontally */
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 520px;        /* sweet spot for mobile & small desktop */
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;     /* soft, modern rounding */
+      box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+      padding: 24px;
+    }
+
+    /* ---------------------------------------------
+       CONTENT
+       --------------------------------------------- */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .icon {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--soft-gold), var(--sky-blue));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
+    }
+    h1 {
+      font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+      line-height: 1.2;
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+    .subcopy {
+      margin: 8px 0 16px;
+      color: var(--muted);
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+      background-clip: padding-box;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .panel {
+        background: linear-gradient(180deg, rgba(23,29,29,0.9), rgba(23,29,29,0.5));
+      }
+    }
+
+    /* ---------------------------------------------
+       BUTTONS
+       --------------------------------------------- */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.05s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      will-change: transform;
+    }
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-color: color-mix(in oklab, var(--accent), black 12%);
+    }
+    .btn-primary:hover { filter: brightness(1.02); }
+
+    /* ---------------------------------------------
+       FOOTER
+       --------------------------------------------- */
+    footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .brand { font-weight: 600; color: var(--slate-gray); }
+
+    /* ---------------------------------------------
+       ACCESSIBILITY HELPERS (visually hidden)
+       --------------------------------------------- */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrapper">
+    <!-- ARIA role/labels help screen readers understand the content -->
+    <section class="card" role="region" aria-labelledby="ty-title" aria-describedby="ty-desc">
+      <header>
+        <div class="icon" aria-hidden="true"></div>
+        <h1 id="ty-title">Thank you! You're on the early‑access list.</h1>
+      </header>
+
+      <p id="ty-desc" class="subcopy">
+        We appreciate your feedback—it helps shape Breath of Faith. If we release something you asked for, we’ll email you.
+      </p>
+
+      <!-- Optional highlight panel for small follow-ups or next steps -->
+      <div class="panel" role="note">
+        <strong>What’s next?</strong>
+        <ul style="margin: 8px 0 0 20px; padding: 0;">
+          <li>We review every note to guide improvements to Breathwork and Pomodoro.</li>
+          <li>Early‑access invites and bonus content will arrive by email.</li>
+        </ul>
+      </div>
+
+      <!-- Primary CTA only (secondary removed by request) -->
+      <div class="actions">
+        <a class="btn btn-primary" href="/coherence-rising-app/" rel="nofollow">Return to the app</a>
+      </div>
+
+      <footer aria-hidden="true">
+        <div class="brand">Coherence Rising</div>
+      </footer>
+    </section>
+  </main>
+
+  <!--
+    Auto-height messaging: when this page is iframed (e.g., inside an Ontraport page),
+    it reports its height to the parent so the iframe can resize without scrollbars.
+    See the parent-side listener snippet provided earlier.
+  -->
+  <script>
+    (function() {
+      function pageHeight() {
+        try {
+          var h = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.offsetHeight
+          );
+          return h;
+        } catch (e) { return 520; }
+      }
+      function post(type) {
+        try { parent.postMessage({ type: type, height: pageHeight() }, '*'); } catch (e) {}
+      }
+      // Notify parent that we're ready and what our height is.
+      window.addEventListener('load', function () {
+        post('ty_ready');
+        // A couple of follow-ups to catch late font/layout changes
+        setTimeout(function(){ post('ty_height'); }, 200);
+        setTimeout(function(){ post('ty_height'); }, 800);
+      });
+      // Respond to content changes
+      try {
+        new ResizeObserver(function(){ post('ty_resize'); })
+          .observe(document.documentElement);
+      } catch (e) {
+        // Fallback: periodic ping if ResizeObserver not available
+        setInterval(function(){ post('ty_height'); }, 1000);
+      }
+    })();
+  </script>
+</body>
+</html>
