@@ -4,14 +4,26 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Coherence Rising — Breath of Faith</title>
+
+<!-- ===========================
+     FONTS (SAFE TO CHANGE)
+     To change fonts, swap the Google Fonts line or remove it.
+=========================== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
+  /* ===========================
+     COLOR TOKENS (EDIT HERE)
+     Day vs Night are below; these drive the whole theme.
+  =========================== */
   :root{
     --gold:#F5E6A1; --lav:#C8BFE7; --olive:#A3B18A; --taupe:#D8CFC4; --sky:#A7C7E7;
     --slate:#7D8C8C; --ivory:#FDF6EC; --ink:#2E3131; --ink-weak:#4b5563;
-    --bg:var(--ivory); --card:#fff; --accent:var(--olive);
+    --bg:#FDF6EC;            /* LIGHTER DAY BACKGROUND */
+    --card:#ffffff;          /* BRIGHT CARDS */
+    --accent:var(--olive);
     --orb:#ffffffc0; --cue:#1f2937; --viz-line:#24423a;
     --r:16px; --shadow:0 8px 24px rgba(0,0,0,.08);
   }
@@ -19,10 +31,15 @@
     :root{ --bg:#0e1012; --card:#13161a; --ink:#e6e9ee; --ink-weak:#aab2bf; --accent:#7aa57a; --orb:#ffffff26; --cue:#e6e9ee; --viz-line:#7aa57a; }
   }
   body[data-theme="night"]{
-    --bg:#0b0e11; --card:#101317; --ink:#e5ecf3; --ink-weak:#a6b0bf;
+    --bg:#0b0e11;            /* DARKER NIGHT BG */
+    --card:#101317;          /* DARKER NIGHT CARD */
+    --ink:#e5ecf3; --ink-weak:#a6b0bf;
     --accent:#7aa57a; --orb:#ffffff22; --cue:#eef3f8; --viz-line:#6fa46f;
   }
 
+  /* ===========================
+     GLOBAL LAYOUT + BASICS
+  =========================== */
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink)}
   *{box-sizing:border-box}
   #cr-app{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;max-width:980px;margin:0 auto;padding:1rem 1rem 10px}
@@ -40,11 +57,33 @@
   .select{border:1px solid #0003;background:var(--card);color:var(--ink);border-radius:10px;padding:.5rem .6rem}
   .timer{font-variant-numeric:tabular-nums;font-size:2rem;font-weight:700}
 
-  /* Intro callouts */
-  .intro{background:linear-gradient(180deg, rgba(255,255,255,.65), rgba(255,255,255,.15)); border:1px solid #0001; border-radius:12px; padding:.75rem .9rem; color:#243138}
-  body[data-theme="night"] .intro{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); color:#dfe7ef}
+  /* ===========================
+     INTRO CALLOUTS (READABLE)
+     ***** THIS REPLACED THE GRADIENT BOXES *****
+     Edit text in HTML below, styles here.
+  =========================== */
+  .intro{
+    background:#ffffff; border:1px solid #00000010; border-radius:12px;
+    padding:.95rem 1rem; color:#1f2a30; box-shadow:0 4px 14px rgba(0,0,0,.05)
+  }
+  body[data-theme="night"] .intro{
+    background:#151a1f; border-color:#ffffff14; color:#e7eef5; box-shadow:0 6px 18px rgba(0,0,0,.35)
+  }
 
-  /* Breathwork visual container */
+  /* ===========================
+     SECTION DIVIDER (BETWEEN MAJOR SECTIONS)
+     Inserted before Pomodoro.
+  =========================== */
+  .section-divider{
+    margin:28px auto 12px; display:flex; align-items:center; gap:10px;
+    opacity:.9; max-width:980px; padding:0 1rem;
+  }
+  .section-divider .line{flex:1; height:1px; background:linear-gradient(90deg, transparent, #7D8C8C55, transparent)}
+  .section-divider .mark{font-weight:700; color:#7D8C8C; letter-spacing:.02em}
+
+  /* ===========================
+     BREATHWORK VISUALS
+  =========================== */
   .viz-wrap{
     position:relative;width:100%;
     height:min(72vh, 95vw);
@@ -55,33 +94,22 @@
   }
   body[data-theme="night"] .viz-wrap{background:linear-gradient(180deg,#0c1210,#0a0f0d)}
 
-  /* Unified scale group for ALL visuals */
   .viz-scale{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(1);
-    transform-origin:center center;will-change:transform;
-    transition:transform 3.6s ease-in-out;
+    transform-origin:center center;will-change:transform;transition:transform 3.6s ease-in-out;
   }
 
-  /* Orb */
   .orb{width:min(68vmin, 92vw);height:min(68vmin, 92vw);background:var(--orb);
        border:2px solid #0003;border-radius:50%;
        box-shadow:inset 0 0 100px rgba(167,199,231,.25), 0 10px 30px rgba(0,0,0,.12)}
 
-  /* SVG/canvas boxes (transparent) */
   .svg-box{width:min(74vmin, 96vw);height:min(74vmin, 96vw)}
   .svg-fit{width:100%;height:100%}
-
-  /* Protestant cross (transparent) */
   .cross-shape{fill:none;stroke:var(--viz-line);stroke-width:40;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 6px 16px rgba(0,0,0,.25))}
   .cross-glow{stroke:rgba(255,255,255,.08);stroke-width:80}
-
-  /* Branches (transparent) */
   .branches line{stroke:var(--viz-line);stroke-width:1.6;stroke-linecap:round}
-
-  /* Starfield */
   #starCanvas{display:block;width:100%;height:100%}
 
-  /* Centered cue for ALL visuals */
   .cue-center{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     text-align:center;font-weight:700;letter-spacing:.2px;color:var(--cue);
@@ -91,16 +119,29 @@
   .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#0002;color:#fff;
         padding:.25rem .6rem;border-radius:999px;font-size:.85rem}
 
-  /* Progress bar */
-  .bar{height:10px;background:#00000012;border-radius:999px;overflow:hidden;border:1px solid #0001}
-  .bar > .fill{height:100%;width:0;background:linear-gradient(90deg, var(--olive), var(--sky)); transition:width .15s linear}
+  /* ===========================
+     PROGRESS BAR (THICKER)
+     Edit thickness by changing height below.
+  =========================== */
+  .bar{height:18px;background:#00000012;border-radius:999px;overflow:hidden;border:1px solid #0000001a}
+  .bar > .fill{
+    height:100%;width:0;background:linear-gradient(90deg, var(--olive), var(--sky));
+    transition:width .15s linear; box-shadow:inset 0 0 8px rgba(255,255,255,.25);
+  }
+  body[data-theme="night"] .bar{background:#ffffff10;border-color:#ffffff20}
 
   footer{text-align:center;color:var(--ink-weak);padding:10px 12px}
   @media (min-width:860px){ .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem} }
+
+  /* Accessibility helper (hidden label) */
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;border:0;padding:0;clip:rect(0 0 0 0);overflow:hidden}
 </style>
 </head>
 <body>
 <div id="cr-app" role="application" aria-label="Coherence Rising: Breath of Faith App">
+  <!-- ===========================
+       HEADER (EDIT TITLES/TAGLINE HERE)
+  =========================== -->
   <header class="header card">
     <h1>Breath of Faith</h1>
     <p class="byline">by Coherence Rising</p>
@@ -112,22 +153,28 @@
     </nav>
   </header>
 
-  <!-- Breathwork -->
+  <!-- ===========================
+       BREATHWORK SECTION
+       *** EDIT INTRO TEXT + MUSIC BLURB HERE ***
+  =========================== -->
   <section id="breathwork" class="card" aria-labelledby="breathwork-title">
     <h2 id="breathwork-title" style="margin:0 0 .5rem;font-size:1.15rem">Breathwork Break</h2>
 
-    <!-- Intro (brief, readable) -->
     <div class="intro" style="margin:.5rem 0 1rem">
+      <!-- **** EDITABLE COPY START **** -->
       <strong>Breath is life — and how we breathe shapes how we feel.</strong>
       Intentional breathwork calms the nervous system, reduces stress, and helps the mind enter a state of focus and prayer.
       As you breathe slowly and deeply, your heart rate steadies and your body shifts into a restorative “rest and digest” state.
       Use these patterns to center yourself and create space for God’s presence.
+      <!-- **** EDITABLE COPY END **** -->
     </div>
 
     <p style="margin:.25rem 0 .75rem">Pick a visual and a breathing pattern. Go fullscreen if you like. Follow the centered cue.</p>
 
+    <!-- Controls -->
     <div class="row" style="justify-content:space-between;align-items:center">
       <div class="actions" role="group" aria-label="Breath durations">
+        <!-- Change label text if desired; data-mins controls duration -->
         <button class="btn" data-mins="3">3 min</button>
         <button class="btn" data-mins="5">5 min</button>
         <button class="btn" data-mins="10">10 min</button>
@@ -136,6 +183,7 @@
         <button id="breathPause" class="btn secondary" disabled>Pause</button>
       </div>
       <div class="row">
+        <!-- PATTERN OPTIONS: change labels safely; values map to JS (see PATTERNS in script) -->
         <select id="patternSelect" class="select" aria-label="Breathing pattern">
           <option value="box-3">Box: 3-3-3-3</option>
           <option value="box-4" selected>Box: 4-4-4-4</option>
@@ -144,6 +192,7 @@
           <option value="even-6">Even: 6-6</option>
           <option value="even-8">Even: 8-8</option>
         </select>
+        <!-- VISUAL MODES: orb, cross, branches, starfield -->
         <select id="vizSelect" class="select" aria-label="Visual" style="margin-left:.5rem">
           <option value="orb" selected>Orb</option>
           <option value="cross">Cross</option>
@@ -159,12 +208,12 @@
         <div class="timer" id="breathTime">00:00</div>
 
         <div id="vizWrap" class="viz-wrap" tabindex="0" aria-live="polite">
-          <!-- Unified scale group -->
+          <!-- Unified scale group (ALL visuals scale together) -->
           <div id="vizScale" class="viz-scale">
             <!-- Orb -->
             <div id="orbBox" class="orb" aria-hidden="false"></div>
 
-            <!-- Cross (Protestant; transparent) -->
+            <!-- Protestant Cross (transparent SVG) -->
             <div id="crossBox" class="svg-box" aria-hidden="true" style="display:none">
               <svg id="crossSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Protestant Christian cross">
                 <g>
@@ -174,27 +223,32 @@
               </svg>
             </div>
 
-            <!-- Branches -->
+            <!-- Fractal-like Branches (transparent SVG) -->
             <div id="branchBox" class="svg-box" aria-hidden="true" style="display:none">
               <svg id="branchSVG" class="svg-fit" viewBox="0 0 1000 1000" role="img" aria-label="Fractal branches">
                 <g id="branchGroup" class="branches"></g>
               </svg>
             </div>
 
-            <!-- Starfield -->
+            <!-- Gentle Starfield (transparent canvas) -->
             <div id="starBox" class="svg-box" aria-hidden="true" style="display:none">
               <canvas id="starCanvas" width="1000" height="1000" aria-label="Gentle starfield"></canvas>
             </div>
           </div>
 
-          <!-- Cue (centered for ALL modes) -->
+          <!-- Centered cue (shared by all visuals) -->
           <div id="cue" class="cue-center">Ready to begin</div>
           <div class="hint fade">Press a duration to start</div>
         </div>
       </div>
 
       <div>
-        <!-- Breathwork music: YouTube playlist -->
+        <!-- ***** MUSIC BLURB (EDIT TEXT OR HIDE THIS <p>) ***** -->
+        <p style="margin:.5rem 0 .35rem; font-size:.95rem; color:var(--ink-weak)">
+          Playlists by <strong>Coherence Rising</strong>, curated to accompany breathwork.
+          Prefer silence? Simply leave the player paused.
+        </p>
+        <!-- ***** YOUTUBE PLAYLIST (EDIT list= ID TO CHANGE) ***** -->
         <iframe
           width="100%" height="300"
           src="https://www.youtube.com/embed/videoseries?list=OLAK5uy_l4UsJuLqbFOSXeOzTEjw_Qfu3WyWvuxgo&rel=0&modestbranding=1&playsinline=1"
@@ -203,19 +257,34 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen></iframe>
+        <!-- ***** OPTIONAL SPOTIFY LINK (EDIT URL) ***** -->
+        <p style="margin:.35rem 0 0; font-size:.9rem; color:var(--ink-weak)">
+          Also on <a href="https://open.spotify.com/album/59QgbMZznJd7gAQloXLlk0" target="_blank" rel="noopener">Spotify</a>.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Pomodoro -->
+  <!-- ===========================
+       SECTION DIVIDER (VISUAL SEPARATION)
+  =========================== -->
+  <div class="section-divider" aria-hidden="true">
+    <span class="line"></span><span class="mark">Focus Session</span><span class="line"></span>
+  </div>
+
+  <!-- ===========================
+       POMODORO SECTION
+       *** EDIT INTRO TEXT + MUSIC BLURB HERE ***
+  =========================== -->
   <section id="pomodoro" class="card" aria-labelledby="pomodoro-title">
     <h2 id="pomodoro-title" style="margin:0 0 .5rem;font-size:1.15rem">Pomodoro Focus</h2>
 
-    <!-- Intro (brief, readable) -->
     <div class="intro" style="margin:.5rem 0 1rem">
+      <!-- **** EDITABLE COPY START **** -->
       <strong>Small bursts of focus lead to big breakthroughs.</strong>
       The Pomodoro rhythm helps you work with energy, not against it: focused intervals followed by short breaks prevent burnout and improve concentration.
       Pair your work with Scripture and calming music to keep both your spirit and productivity strong.
+      <!-- **** EDITABLE COPY END **** -->
     </div>
 
     <p style="margin:.25rem 0 .75rem">25 minutes on, then 5 minutes off. After four Pomodoros, enjoy a 15-minute long break.</p>
@@ -233,7 +302,7 @@
       </div>
     </div>
 
-    <!-- Progress bars -->
+    <!-- PROGRESS BAR (THICKER + MATCHED STYLE) -->
     <div style="margin:.6rem 0 .25rem;display:flex;justify-content:space-between;align-items:center">
       <div id="pomoBarLabel" style="font-size:.9rem;color:var(--ink-weak)">Block progress (Work + Short break)</div>
       <div id="pomoRound" style="font-size:.9rem;color:var(--ink-weak)">Round 1 / 4</div>
@@ -246,7 +315,11 @@
       “Commit your work to the LORD, and your plans will be established.” — Proverbs 16:3
     </div>
 
-    <!-- Focus music: YouTube playlist -->
+    <!-- ***** MUSIC BLURB (EDIT TEXT OR HIDE THIS <p>) ***** -->
+    <p style="margin:.5rem 0 .35rem; font-size:.95rem; color:var(--ink-weak)">
+      Focus music by <strong>Coherence Rising</strong>. If you prefer no audio, keep the player paused.
+    </p>
+    <!-- ***** YOUTUBE PLAYLIST (EDIT list= ID TO CHANGE) ***** -->
     <iframe
       style="border-radius:12px"
       src="https://www.youtube.com/embed/videoseries?list=OLAK5uy_mYQTMuHxJs17LZApCnxc0ak0E73-0jLwU&rel=0&modestbranding=1&playsinline=1"
@@ -254,23 +327,50 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerpolicy="strict-origin-when-cross-origin"
       title="Focus Album" allowfullscreen></iframe>
+    <!-- ***** OPTIONAL SPOTIFY LINK (EDIT URL) ***** -->
+    <p style="margin:.35rem 0 0; font-size:.9rem; color:var(--ink-weak)">
+      Also on <a href="https://open.spotify.com/album/3lL4wCD0MDpEW2C3wf1DZH" target="_blank" rel="noopener">Spotify</a>.
+    </p>
 
+    <!-- Completion toast -->
     <div id="toast" style="display:none;margin-top:10px;padding:10px;border:1px solid #0003;border-radius:10px;background:var(--card)">
       Pomodoro complete! Take a short break. 🌿
     </div>
   </section>
+
+  <!-- ===========================
+       FEEDBACK (PLACEHOLDER)
+       ***** DO NOT IMPLEMENT YET *****
+       When ready for Option B (Ontraport modal), we’ll replace this card with:
+       - A button that opens a modal
+       - An iframe with your Ontraport form embed
+       - Close button + auto-height script
+  =========================== -->
+  <section class="card" id="feedback">
+    <h2 style="margin:0 0 .5rem;font-size:1.15rem">Feedback</h2>
+    <p style="margin:.25rem 0 .75rem">We welcome your thoughts to improve this app. (Email signup modal coming soon.)</p>
+    <!-- TEMP BUTTON (NO ACTION YET) -->
+    <button class="btn ghost" disabled title="Coming soon">Share feedback & get updates</button>
+  </section>
 </div>
 
+<!-- ===========================
+     FOOTER (EDITABLE TEXT)
+=========================== -->
 <footer>
   <p><strong>Coherence Rising</strong> · Music & Meditations</p>
   <p style="font-size:.9rem">© <span id="year"></span> Coherence Rising — Prayer & Productivity Companion</p>
 </footer>
 
 <script>
-  // Year
+  // ===========================
+  // YEAR (AUTO)
+  // ===========================
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Night mode
+  // ===========================
+  // NIGHT MODE TOGGLE
+  // ===========================
   (function(){
     var nightBtn = document.getElementById('nightToggle');
     if (!nightBtn) return;
@@ -281,14 +381,17 @@
     });
   })();
 
-  // Utilities
+  // ===========================
+  // SMALL UTILS
+  // ===========================
   var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
   var pad=function(n){return String(n).padStart(2,'0')};
   var fmt=function(ms){var s=Math.max(0,Math.floor(ms/1000));return pad(Math.floor(s/60))+':'+pad(s%60)};
 
-  /* =======================
-     BREATHWORK (visuals + patterns)
-  ======================= */
+  /* =======================================================
+     BREATHWORK (VISUALS + PATTERNS)
+     ***** SAFE AREA TO EDIT: PATTERN DURATIONS + CUE TEXT *****
+  ======================================================= */
   (function(){
     var timeEl=$('#breathTime'), cueEl=$('#cue');
     var vizWrap=$('#vizWrap'), vizScale=$('#vizScale');
@@ -299,7 +402,7 @@
     var branchGroup=$('#branchGroup');
     var starCanvas=$('#starCanvas'), starCtx = starCanvas && starCanvas.getContext ? starCanvas.getContext('2d') : null;
 
-    // PATTERNS
+    // ***** EDIT PATTERN DURATIONS HERE (ms) *****
     var PATTERNS={
       'box-3':  [{name:'inhale',ms:3000,scale:1.85},{name:'hold',ms:3000,scale:null},{name:'exhale',ms:3000,scale:0.9},{name:'hold',ms:3000,scale:null}],
       'box-4':  [{name:'inhale',ms:4000,scale:1.85},{name:'hold',ms:4000,scale:null},{name:'exhale',ms:4000,scale:0.9},{name:'hold',ms:4000,scale:null}],
@@ -316,7 +419,7 @@
     var phaseIdx=0, phaseEnd=null, phaseRemaining=null;
     var tickIv=null;
 
-    // Visual switcher
+    // ***** SWITCH VISUAL MODE *****
     function show(mode){
       orbBox.style.display    = (mode==='orb') ? 'block' : 'none';
       crossBox.style.display  = (mode==='cross') ? 'block' : 'none';
@@ -327,7 +430,7 @@
     vizSelect.addEventListener('change',function(){ show(vizSelect.value); });
     show('orb');
 
-    // Branches (transparent)
+    // ***** DRAW BRANCHES ONCE *****
     function drawBranches(){
       branchGroup.innerHTML='';
       var W=1000,H=1000;
@@ -349,7 +452,7 @@
     }
     drawBranches();
 
-    // Starfield (gentle drift; speed tied to scale)
+    // ***** STARFIELD (gentle drift) *****
     var stars=[], animId=null, lastT=0, starDrift=0.03;
     function initStars(){
       if(!starCanvas || !starCtx) return;
@@ -391,7 +494,7 @@
     function startStars(){ if(animId) return; initStars(); lastT=0; animId=window.requestAnimationFrame(tickStars); }
     function stopStars(){ if(animId) window.cancelAnimationFrame(animId); animId=null; }
 
-    // Cue + scale
+    // ***** CUE TEXT (EDIT WORDING HERE) *****
     function setCue(name){
       if(!cueEl) return;
       if(name==='inhale') cueEl.textContent='Inhale — Be still';
@@ -399,6 +502,8 @@
       else if(name==='exhale') cueEl.textContent='Exhale — and know';
       else cueEl.textContent='Ready to begin';
     }
+
+    // ***** SCALE PER PHASE (EDIT SCALE VALUES ABOVE IN PATTERNS) *****
     function setScaleForPhase(phase){
       vizScale.style.transitionDuration = (phase.ms/1000)+'s';
       if(phase.scale!=null){
@@ -409,7 +514,7 @@
     }
     function resetScale(){
       vizScale.style.transitionDuration = '0.4s';
-      vizScale.style.transform = 'translate(-50%,-50%) scale('+1.05+')';
+      vizScale.style.transform = 'translate(-50%,-50%) scale('+REST_SCALE+')';
       starDrift = 0.03;
     }
     resetScale();
@@ -459,12 +564,11 @@
       stopTick(); tickIv=setInterval(update, 200); update();
     }
 
+    // Pattern + visual listeners
     patternSelect.addEventListener('change', function(){
       phases = PATTERNS[patternSelect.value] || PATTERNS['box-4'];
       if(running){ pause(); resume(); }
     });
-
-    // Fullscreen (with WebKit/MS fallbacks)
     var fsBtn=$('#fsToggle');
     function enterFS(el){
       try{
@@ -498,14 +602,16 @@
     if(pauseBtn) pauseBtn.addEventListener('click', function(){ if(!running) return; paused?resume():pause(); });
   })();
 
-  /* =======================
-     POMODORO — cycles + progress
-  ======================= */
+  /* =======================================================
+     POMODORO — CYCLES + PROGRESS
+     ***** SAFE AREA TO EDIT: DURATIONS + LABEL TEXT *****
+  ======================================================= */
   (function(){
     var pomo=$('#pomo'), start=$('#pomoStart'), pause=$('#pomoPause'), reset=$('#pomoReset'),
         status=$('#pomoStatus'), verse=$('#pomoVerse'), toast=$('#toast'),
         skip=$('#pomoSkip'), barFill=$('#pomoFill'), barLabel=$('#pomoBarLabel'), roundEl=$('#pomoRound');
 
+    // ***** EDIT SCRIPTURE LIST (ADD/REMOVE LINES) *****
     var verses=[
       '“Be still, and know that I am God.” — Psalm 46:10',
       '“The LORD is my shepherd; I shall not want.” — Psalm 23:1',
@@ -517,13 +623,16 @@
       '“In all your ways acknowledge Him, and He will make straight your paths.” — Proverbs 3:6',
     ];
 
+    // ***** EDIT DURATIONS HERE (ms) *****
     var WORK=25*60*1000, SHORT=5*60*1000, LONG=15*60*1000, BLOCK=WORK+SHORT;
+
     var mode='work'; // 'work' | 'short' | 'long'
     var round=1;     // 1..4
     var ends=null, rest=null, iv=null, started=false;
 
     function setVerse(){ if(verse) verse.textContent = verses[Math.floor(Math.random()*verses.length)]; }
 
+    // ***** STATUS LINE TEXT *****
     function setStatus(){
       if(mode==='work'){
         status.textContent = 'Work — Pomodoro '+round+' of 4';
@@ -542,6 +651,7 @@
 
     function up(ms){ if(pomo) pomo.textContent=fmt(ms); }
 
+    // ***** PROGRESS LOGIC *****
     function updateBar(msRemaining){
       if(mode==='work' || mode==='short'){
         var elapsed = (mode==='work') ? (WORK - msRemaining) : (WORK + (SHORT - msRemaining));
@@ -561,19 +671,13 @@
       if(rem<=0){
         clearInterval(iv); iv=null;
         if(mode==='work'){
-          // Work finished
-          if(round===4){
-            mode='long'; startPhase(LONG);
-          }else{
-            mode='short'; startPhase(SHORT);
-          }
+          if(round===4){ mode='long'; startPhase(LONG); }
+          else{ mode='short'; startPhase(SHORT); }
           if(toast){ toast.style.display='block'; setTimeout(function(){toast.style.display='none'}, 3000); }
         }else if(mode==='short'){
-          // Short break finished -> next work, increment round
           round = Math.min(4, round+1);
           mode='work'; startPhase(WORK);
         }else{
-          // Long break finished -> reset cycle
           round = 1; mode='work'; startPhase(WORK);
         }
       }
@@ -585,13 +689,12 @@
       ends = Date.now() + dur;
       if(iv) clearInterval(iv);
       iv=setInterval(tick, 200);
-      tick(); // immediate UI update
+      tick();
     }
 
     function startAll(){
-      if(started && iv) return; // already running
-      started = true;
-      mode='work'; round = (round<1||round>4)?1:round;
+      if(started && iv) return;
+      started = true; mode='work'; round = (round<1||round>4)?1:round;
       startPhase(WORK);
     }
     function pauseAll(){
@@ -606,9 +709,8 @@
     function skipBreak(e){
       e.preventDefault();
       if(mode==='short' || mode==='long'){
-        // jump to next work
         mode='work';
-        if(round===4) round=1; // after long break
+        if(round===4) round=1;
         startPhase(WORK);
       }
     }
@@ -622,9 +724,10 @@
     up(WORK); setStatus();
   })();
 
-  /* =======================
-     Auto-height message (harmless if standalone)
-  ======================= */
+  /* =======================================================
+     AUTO-HEIGHT MESSAGE FOR ONTRAPORT EMBED (SAFE TO KEEP)
+     Does nothing harmful standalone; lets parent page resize iframe.
+  ======================================================= */
   (function () {
     function elementBottom(el){ if(!el) return 0; var r=el.getBoundingClientRect(); return Math.ceil((window.scrollY||0)+r.bottom); }
     function pageHeight() {
